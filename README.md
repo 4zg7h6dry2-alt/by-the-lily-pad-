@@ -6,7 +6,6 @@ Features
 
 	•	The Last Thought: when you stop or finish a session, leave a note about what you were doing. It is shown to you when you come back.
 	•	The Little Accomplishment Jar: every completed Pomodoro adds a glowing star to your jar.
-	•	The Room Remembers: the room follows the real time of day, from golden morning to lavender evening to a moonlit night. The button in the top-right corner previews each time of day.
 	•	A Letter to Tomorrow: write a short message to your future self and it appears the next day.
 	•	The Tea Temperature: during breaks your tea slowly cools, and when the break ends the cup is empty.
 	•	The Forgotten Bookshelf: add subjects you want to revisit. They gather dust the longer you leave them, and you can dust them off when you return.
