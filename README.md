@@ -1,4 +1,4 @@
-# lily-pad-study-
+# by-the-lily-pad-
 A cozy pixel-art Pomodoro study room by a lotus pond. Gentle timers, a jar of stars, and no pressure
 This is a calm place to study, not a productivity dashboard. There are no leaderboards, no streak guilt, and no loud notifications, just small changes in the room as you make progress.
 
