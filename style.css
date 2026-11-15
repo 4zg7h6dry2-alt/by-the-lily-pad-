@@ -1,10 +1,10 @@
 :root{--pix:'Pixelify Sans',ui-monospace,monospace;--serif:'Lora',Georgia,serif}
-/* daytime: cream glass, leafy green accents */
-body{--plum:#4a2a3a;--rose:#f6b3cd;--gold:#4f8a45;--ink:#3b2a33;--glass:rgba(255,251,243,.84);
---btnShadow:#d889ac;--edge:rgba(255,255,255,.55);--field:rgba(255,255,255,.7);--noteBg:rgba(120,180,100,.16);--line:#c98aa6;--jarfill:rgba(255,255,255,.55)}
-/* evening and night: deep indigo glass, candle-gold accents */
-body[data-time=evening],body[data-time=night]{--plum:#2a1424;--rose:#e9a9c4;--gold:#f6d28b;--ink:#fff3f8;--glass:rgba(28,24,62,.78);
---btnShadow:var(--btnShadow);--edge:rgba(20,16,50,.5);--field:rgba(255,255,255,.08);--noteBg:rgba(246,210,139,.14);--line:#fbe3ee;--jarfill:rgba(255,243,248,.1)}
+/* day: Dwindling Dandelion, Cinderella, Fly a Kite, Watermelon Milk, Candy Cane */
+body{--plum:#4b3442;--rose:#F6C3BF;--gold:#b0586a;--onGold:#fff;--ink:#4b3442;--glass:rgba(249,231,215,.9);--btnShadow:#d9a29c;--edge:rgba(255,255,255,.55);
+--field:rgba(255,255,255,.65);--noteBg:rgba(195,220,242,.5);--line:#DED0C8;--border:#F6C3BF;--sky1:#C3DCF2;--sky2:#F9E7D7}
+/* night: #E37795 #B85D80 #E5897C #EE9E86 #2B417B */
+body[data-time=night]{--plum:#26183a;--rose:#E37795;--gold:#EE9E86;--onGold:#2b1a2f;--ink:#fdeee9;--glass:rgba(43,65,123,.86);--btnShadow:#B85D80;--edge:rgba(18,26,66,.55);
+--field:rgba(255,255,255,.1);--noteBg:rgba(238,158,134,.16);--line:#B85D80;--border:#E37795;--sky1:#17224f;--sky2:#B85D80}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%}
 body{font-family:var(--serif);color:var(--ink);background:#bcd9ee;
@@ -13,17 +13,9 @@ body{overflow-x:hidden}
 .bg{position:fixed;inset:0;background-size:cover;background-position:center;image-rendering:pixelated;z-index:0;transition:opacity 3s}
 #bgDay{background-image:url(room-day.png)}
 #bgNight{background-image:url(room-night.png);opacity:0}
-body[data-time=evening] #bgNight{opacity:.55}
 body[data-time=night] #bgNight{opacity:1}
 #tint{position:fixed;inset:0;pointer-events:none;transition:background 2s,opacity 2s;z-index:0}
-body[data-time=morning] #tint{background:linear-gradient(180deg,rgba(255,200,110,.34),rgba(255,180,120,.1));mix-blend-mode:soft-light}
-body[data-time=afternoon] #tint{background:rgba(255,255,235,.1);mix-blend-mode:soft-light}
-body[data-time=evening] #tint{background:linear-gradient(180deg,rgba(170,120,240,.42),rgba(255,150,180,.2));mix-blend-mode:soft-light}
-body[data-time=night] #tint{background:radial-gradient(ellipse at 50% 60%,rgba(0,0,0,0),rgba(8,10,45,.3) 85%)}
-main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:18px;display:grid;gap:14px;
-grid-template-columns:1fr;}
-@media(min-width:860px){main{grid-template-columns:1.2fr 1fr;align-items:start;padding-top:28px}}
-.card{background:var(--glass);backdrop-filter:blur(6px);border:2px solid rgba(233,169,196,.45);border-radius:14px;padding:16px;
+.card{background:var(--glass);backdrop-filter:blur(6px);border:2px solid var(--border);border-radius:14px;padding:16px;
 box-shadow:0 0 0 3px var(--edge),0 10px 30px rgba(40,30,60,.25)}
 h1,h2{font-family:var(--pix);font-weight:600;margin:0 0 8px;letter-spacing:.02em}
 h1{font-size:1.7rem}h2{font-size:1.15rem;color:var(--gold)}
@@ -32,10 +24,10 @@ p,label{font-size:.95rem;line-height:1.5;margin:0 0 8px}
 button{font:inherit;font-family:var(--pix);cursor:pointer;color:var(--plum);background:var(--rose);border:0;border-radius:8px;
 padding:9px 16px;box-shadow:0 3px 0 var(--btnShadow);transition:transform .08s}
 button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--btnShadow)}
-button.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px rgba(233,169,196,.6)}
+button.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--border)}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 textarea,input[type=text],input[type=number]{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--field);
-border:2px solid rgba(233,169,196,.7);border-radius:8px;padding:8px}
+border:2px solid var(--border);border-radius:8px;padding:8px}
 textarea{min-height:70px;resize:vertical}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 #clock{font-family:var(--pix);font-size:clamp(3.6rem,15vw,6rem);line-height:1;text-align:center;margin:6px 0;
@@ -54,7 +46,7 @@ text-shadow:0 0 22px rgba(246,210,139,.45)}
 @keyframes steam{0%,100%{transform:translateY(0);opacity:.2}50%{transform:translateY(-6px);opacity:1}}
 /* shelf */
 .topic{position:relative;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;margin:6px 0;
-background:linear-gradient(90deg,#6d3552,#8a4a69);border-radius:6px;overflow:hidden;border-bottom:4px solid #3b1b2e}
+background:linear-gradient(90deg,#b85d80,#c9688a);border-radius:6px;overflow:hidden;border-bottom:4px solid #8a3f60}
 .topic .dust{position:absolute;inset:0;pointer-events:none;
 background:radial-gradient(circle at 20% 30%,#cfc3b6 0 2px,transparent 3px),radial-gradient(circle at 60% 70%,#cfc3b6 0 2px,transparent 3px),
 radial-gradient(circle at 85% 25%,#cfc3b6 0 1.5px,transparent 3px),linear-gradient(rgba(200,190,175,.55),rgba(200,190,175,.15));
@@ -83,3 +75,111 @@ background-size:34px 22px,29px 19px,41px 23px,100% 100%}
 #noteDot{display:inline-block;width:8px;height:8px;margin-left:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);animation:tw 2.4s ease-in-out infinite}
 #noteDot.seen{display:none}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- desktop layout: the room is the star ---------- */
+html,body{height:100%;overflow:hidden}
+main{position:relative;z-index:1}
+.topbar{position:fixed;top:14px;right:18px;z-index:5;display:flex;gap:8px}
+.topbar #noteBtn,.topbar #timeBtn{position:static;background:var(--glass);font-size:.8rem}
+#timerCard{position:fixed;left:24px;top:24px;width:320px;z-index:3;max-height:calc(100vh - 110px);overflow:auto}
+.panel{position:fixed;right:24px;bottom:92px;width:350px;max-width:calc(100vw - 32px);max-height:calc(100vh - 150px);overflow:auto;z-index:4;display:none}
+.panel.open{display:block}
+.dock{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:6;display:flex;gap:8px;padding:8px 10px;
+background:var(--glass);backdrop-filter:blur(6px);border:2px solid var(--border);border-radius:14px;box-shadow:0 0 0 3px var(--edge),0 10px 30px rgba(40,30,60,.25)}
+.dock button[aria-pressed=true]{background:var(--gold);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+@media(max-width:760px){.dock{flex-wrap:wrap;justify-content:center;width:calc(100vw - 20px)}#timerCard{left:10px;top:50px;width:calc(100vw - 20px)}}
+
+/* ---------- pixel diary (open book on desktop) ---------- */
+#diary{position:fixed;inset:0;z-index:8;display:none;place-items:center;background:rgba(20,8,18,.55);font-family:var(--pix);color:#222;image-rendering:pixelated}
+#diary.open{display:grid}
+.bookwrap{position:relative;width:min(1000px,90vw);height:min(600px,76vh);margin-top:30px}
+.bookwrap::before{content:"";position:absolute;left:-52px;top:-58px;width:62%;height:90%;border:4px solid #111;transform:rotate(-6deg);
+background:radial-gradient(#fff 1.6px,transparent 2.2px) 0 0/12px 12px,linear-gradient(#f7a8d2,#f08cc0)}
+.bookwrap::after{content:"my diary";position:absolute;left:30px;top:-52px;width:190px;padding:8px 0;text-align:center;font-size:1.3rem;
+background:#fff;border:3px dashed #111;border-radius:50%;transform:rotate(-6deg)}
+.book{position:relative;z-index:1;height:100%;display:grid;grid-template-columns:1fr 44px 1fr;padding:14px 16px 14px 8px;
+background:#111;border-left:26px solid #ff3d9a;border-bottom:16px solid #ff3d9a;border-radius:14px 0 0 30px;box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.dpage{background:#fffdfb;border:2px solid #333;padding:14px 16px;overflow:auto;display:flex;flex-direction:column;gap:8px;min-height:0}
+.rings{background:linear-gradient(90deg,transparent 40%,#444 40% 60%,transparent 60%),repeating-linear-gradient(180deg,transparent 0 14px,#d6d6d6 14px 22px,#666 22px 25px)}
+#diary h3{margin:0;font-size:2rem;font-weight:600;color:#111;line-height:1}
+#diary small{opacity:.65}
+.dbanner{text-align:center;color:#ff3d9a;font-size:1.05rem;letter-spacing:.12em}
+.dhead{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.dhead>div{text-align:center}
+.dstars{margin:0;font-size:.85rem;color:#b07a00;min-height:1em;text-align:center}
+.dtitle{border:3px dotted #ff3d9a;text-align:center;padding:4px;font-size:1.1rem}
+.goal{display:flex;gap:8px;align-items:center;margin:0}
+.goal input[type=checkbox]{width:22px;height:22px;flex:none;accent-color:#ff3d9a}
+#diary input[type=text],#diary textarea{background:#fff;color:#222;border:2px solid #555;border-radius:0;font-family:var(--pix);font-size:1rem;padding:6px}
+#diary textarea{flex:1;min-height:110px;line-height:28px;padding:0 8px;background:repeating-linear-gradient(180deg,#fff 0 27px,#f0d5e3 27px 28px)}
+#diary button{background:#eee;color:#222;border:2px solid #111;border-radius:0;box-shadow:inset -2px -2px #999,inset 2px 2px #fff;padding:4px 12px;font-size:.95rem}
+#diary button:active{box-shadow:inset 2px 2px #999;transform:none}
+#diary button:disabled{opacity:.35;cursor:default}
+#diary button:focus-visible,#diary input:focus-visible,#diary textarea:focus-visible{outline:3px solid #ff3d9a}
+.dbtns{position:absolute;right:0;top:-36px;display:flex;gap:6px}
+#dList button{display:block;width:100%;text-align:left;margin:0 0 6px}
+#dList button.cur{background:#ffd1e6}
+#dList small{display:block;font-family:var(--serif)}
+.mascot{position:absolute;bottom:-34px;width:84px;z-index:2;pointer-events:none}
+.m1{left:-86px}.m2{right:-60px}
+
+.dock button{white-space:nowrap;font-size:.9rem;padding:8px 14px}
+
+/* ---------- v3: centered timer, theme bar, living jar, star window ---------- */
+#timerCard{left:50%;transform:translateX(-50%);top:70px;width:min(360px,calc(100vw - 24px));text-align:center;max-height:calc(100vh - 160px)}
+#timerCard .row{justify-content:center}
+.dock button[aria-pressed=true]{background:var(--gold);color:var(--onGold)}
+.themebar{display:flex;gap:3px;padding:3px;background:var(--glass);border:2px solid var(--border);border-radius:12px}
+.themebar button{display:flex;align-items:center;gap:8px;background:transparent;color:var(--ink);box-shadow:none;padding:5px 10px;font-size:.8rem;border-radius:9px}
+.themebar button[aria-pressed=true]{background:var(--rose);color:var(--plum)}
+.sw{display:flex}.sw i{display:block;width:14px;height:14px;border:1px solid rgba(0,0,0,.2);margin-left:-1px}
+#jar{display:block;width:100%;max-width:190px;margin:0 auto;image-rendering:pixelated}
+#sky{display:block;width:100%;border-radius:8px;margin-bottom:6px}
+#sky .s1{stop-color:var(--sky1)}#sky .s2{stop-color:var(--sky2)}
+.sstar{fill:#ffcf4d;filter:drop-shadow(0 0 2px #e0a52f);transform-box:fill-box;transform-origin:center;animation:tw 3s ease-in-out infinite}
+.sstar.pop{animation:pop 1s cubic-bezier(.2,1.6,.4,1) 1,tw 3s 1s ease-in-out infinite}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+#sill{height:90px}
+@media(max-width:760px){#timerCard{top:96px}}
+
+/* ---------- v4: sharp, crisp pixel windows ---------- */
+*,*::before,*::after{border-radius:0!important}
+body{--wb:#4b3442;--wshadow:rgba(75,52,66,.3);--glassT:rgba(249,231,215,.56);--tshadow:rgba(255,255,255,.6)}
+body[data-time=night]{--wb:#EE9E86;--wshadow:rgba(8,12,38,.6);--glassT:rgba(43,65,123,.52);--tshadow:rgba(10,14,40,.55)}
+.card{border:2px solid var(--wb);box-shadow:4px 4px 0 var(--wshadow);backdrop-filter:none;padding:12px}
+.card>h2:first-child,#timerCard>h1:first-child{margin:-12px -12px 12px;padding:5px 10px;background:var(--rose);color:var(--plum);border-bottom:2px solid var(--wb);
+ font-size:.95rem;letter-spacing:.04em;display:flex;align-items:center;gap:8px;text-align:left;text-shadow:none}
+.card>h2:first-child::before,#timerCard>h1:first-child::before{content:"\2726"}
+.card>h2:first-child::after,#timerCard>h1:first-child::after{content:"";margin-left:auto;width:34px;height:10px;
+ background:linear-gradient(90deg,var(--wb) 0 10px,transparent 10px 12px,var(--wb) 12px 22px,transparent 22px 24px,var(--wb) 24px 34px)}
+button{border:2px solid var(--wb);box-shadow:2px 2px 0 var(--wb)}
+button:active{transform:translate(2px,2px);box-shadow:none}
+button.ghost{background:var(--field);color:var(--ink)}
+textarea,input[type=text],input[type=number]{border:2px solid var(--wb)}
+.dock{border:2px solid var(--wb);box-shadow:4px 4px 0 var(--wshadow);backdrop-filter:none;padding:6px}
+.themewrap{position:relative}
+#themeBtn,#noteBtn{font-size:.8rem;padding:6px 12px}
+.menu{position:absolute;right:0;top:calc(100% + 8px);min-width:220px;background:var(--glass);border:2px solid var(--wb);box-shadow:4px 4px 0 var(--wshadow);
+ padding:4px;display:flex;flex-direction:column;gap:4px;z-index:7}
+.menu[hidden]{display:none}
+.menu button{display:flex;justify-content:space-between;align-items:center;gap:12px;background:transparent;border:0;box-shadow:none;color:var(--ink);padding:7px 9px;text-align:left}
+.menu button[aria-pressed=true]{background:var(--rose);color:var(--plum)}
+.menu button:hover{outline:2px solid var(--wb);outline-offset:-2px}
+.sw.muted{font-size:.7rem;opacity:.7;font-style:normal}
+/* timer window: see-through, one pixel font, fits without scrolling */
+#timerCard,#timerCard *{font-family:var(--pix)}
+#timerCard{background:var(--glassT);overflow:visible;max-height:none;top:66px;width:min(340px,calc(100vw - 24px));text-shadow:1px 1px 0 var(--tshadow)}
+#timerCard #mode{font-size:.85rem;margin:0}
+#timerCard #clock{font-size:clamp(2.4rem,12vh,4.6rem);margin:2px 0 6px}
+#timerCard .row{gap:8px}
+#settings{margin-top:10px;font-size:.85rem}
+#settings label{display:flex;align-items:center;gap:6px;margin:0;font-size:.85rem}
+#settings input{width:56px;padding:4px 6px;font-size:.9rem;text-align:center;background:var(--field)}
+#timerCard #teaText{font-size:.85rem;margin:2px 0 0}
+#tea{margin-top:4px}
+#timerCard.onbreak #settings{display:none}
+#timerCard .note{font-size:.85rem;text-align:left;margin-bottom:8px;padding:6px 8px}
+#timerCard .note p{font-size:.85rem;margin:2px 0 4px}
+#jar{max-width:min(190px,26vh)}
+@media(max-width:760px){#timerCard{top:96px}}
+#timerCard .muted{font-style:normal;opacity:1}
