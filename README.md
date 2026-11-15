@@ -12,8 +12,9 @@ Features
 	•	The Forgotten Bookshelf: add subjects you want to revisit. They gather dust the longer you leave them, and you can dust them off when you return.
 	•	The Quiet Achievement: the corner of your room comes alive as you finish sessions. A candle glows after 1, a flower blooms after 3, and a star appears in the window after 5.
 
-Your data
+Note fren: 
+Everything is saved in your own browser (localStorage) on the device you are using. Nothing is sent to a server. 
+If you switch devices or clear your browser data, your sanctuary starts fresh. The "A little note" button in the site explains this too.
 
-Everything is saved in your own browser (localStorage) on the device you are using. Nothing is sent to a server. If you switch devices or clear your browser data, your sanctuary starts fresh. The "A little note" button in the site explains this too.
 The pixel-art backgrounds were made with AI
 clumsy coding is all me baby! :) 
