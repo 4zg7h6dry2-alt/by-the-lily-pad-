@@ -11,9 +11,17 @@
 <div class="bg" id="bgDay"></div>
 <div class="bg" id="bgNight"></div>
 <div id="tint"></div>
-<button id="timeBtn" class="ghost" title="Preview the room at other times of day"></button>
-
-<button id="noteBtn" class="ghost" aria-label="A little note about your saved data">&#9993; A little note<span id="noteDot"></span></button>
+<div class="topbar">
+  <button id="noteBtn" class="ghost" aria-label="A little note about your saved data">&#10023; A little note<span id="noteDot"></span></button>
+  <div class="themewrap">
+    <button id="themeBtn" class="ghost" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu">Theme: <span id="themeName">Auto</span> &#9662;</button>
+    <div id="themeMenu" class="menu" role="group" aria-label="Theme" hidden>
+      <button data-theme="day" aria-pressed="false">Day <span class="sw"><i style="background:#F9E7D7"></i><i style="background:#F5D7C8"></i><i style="background:#C3DCF2"></i><i style="background:#DED0C8"></i><i style="background:#F6C3BF"></i></span></button>
+      <button data-theme="night" aria-pressed="false">Night <span class="sw"><i style="background:#E37795"></i><i style="background:#B85D80"></i><i style="background:#E5897C"></i><i style="background:#EE9E86"></i><i style="background:#2B417B"></i></span></button>
+      <button data-theme="auto" aria-pressed="true">Auto <span class="sw muted">by the clock</span></button>
+    </div>
+  </div>
+</div>
 
 <main>
   <section class="card" id="timerCard">
@@ -26,13 +34,13 @@
       <button id="pause" class="ghost" hidden>Pause</button>
       <button id="stop" class="ghost" hidden>Stop</button>
     </div>
-    <div class="row" style="justify-content:center;margin-top:12px">
+    <div class="row" id="settings">
       <label>Focus <input id="fMin" type="number" min="1" max="120" value="25" style="width:64px"></label>
       <label>Break <input id="bMin" type="number" min="1" max="60" value="5" style="width:64px"></label>
     </div>
 
-    <div id="tea" style="margin-top:14px">
-      <svg viewBox="0 0 120 110" width="150" role="img" aria-label="A cup of tea cooling">
+    <div id="tea">
+      <svg viewBox="0 0 120 110" width="96" role="img" aria-label="A cup of tea cooling">
         <g id="steam" fill="none" stroke="#fff3f8" stroke-width="3" stroke-linecap="round">
           <path d="M45 26c-6-6 6-10 0-18"/><path d="M60 26c-6-6 6-10 0-18"/><path d="M75 26c-6-6 6-10 0-18"/>
         </g>
@@ -47,16 +55,20 @@
     </div>
   </section>
 
-  <div style="display:grid;gap:14px">
-    <section class="card">
+      <section class="card panel" id="pJar">
       <h2>The little accomplishment jar</h2>
-      <svg id="jar" viewBox="0 0 120 150" role="img" aria-label="Jar of stars"></svg>
+      <canvas id="jar" width="48" height="64" role="img" aria-label="A bottle filled with glowing liquid and stars"></canvas>
       <p id="jarText" style="text-align:center"></p>
     </section>
 
-    <section class="card">
+    <section class="card panel" id="pSill">
       <h2>The quiet corner</h2>
-      <svg id="sillWrap" viewBox="0 0 300 120" width="100%" height="120" style="display:none"></svg>
+      <svg id="sky" viewBox="0 0 300 130" role="img" aria-label="A window that fills with stars" shape-rendering="crispEdges">
+        <defs><linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="s1"/><stop offset="1" class="s2"/></linearGradient></defs>
+        <rect x="2" y="2" width="296" height="126" fill="url(#skyG)"/>
+        <g id="skyStars"></g>
+        <rect x="2" y="2" width="296" height="126" fill="none" stroke="var(--line)" stroke-width="4"/>
+      </svg>
       <div id="sill" data-l="0">
         <svg class="it" id="itCandle" viewBox="0 0 60 120" width="60" height="110" aria-label="Candle">
           <circle id="glow" cx="30" cy="42" r="34" fill="#f6d28b" opacity=".5"/>
@@ -69,28 +81,55 @@
           <g fill="#e9a9c4"><circle cx="30" cy="36" r="9"/><circle cx="20" cy="44" r="9"/><circle cx="40" cy="44" r="9"/><circle cx="23" cy="30" r="9"/><circle cx="37" cy="30" r="9"/></g>
           <circle cx="30" cy="39" r="6" fill="#f6d28b"/></g>
         </svg>
-        <svg class="it" id="itStar" viewBox="0 0 60 120" width="60" height="110" aria-label="A star in the window">
-          <rect x="6" y="20" width="48" height="90" rx="24" fill="#3a2060"/>
-          <path id="skystar" d="M30 36l4 10 11 1-8 7 3 11-10-6-10 6 3-11-8-7 11-1z" fill="#f6d28b"/>
-        </svg>
       </div>
       <p class="muted" id="sillText"></p>
     </section>
 
-    <section class="card">
+    <section class="card panel" id="pShelf">
       <h2>The forgotten bookshelf</h2>
       <div class="row"><input type="text" id="topicIn" placeholder="A subject to revisit" style="flex:1;width:auto" maxlength="40"><button id="addTopic">Add</button></div>
       <div id="shelf"></div>
     </section>
 
-    <section class="card">
+    <section class="card panel" id="pLetter">
       <h2>A letter to tomorrow</h2>
       <div id="letterOut"></div>
       <textarea id="letterIn" placeholder="Dear tomorrow me…"></textarea>
       <div class="row" style="margin-top:8px"><button id="saveLetter">Seal the letter</button><span id="letterMsg" class="muted"></span></div>
     </section>
-  </div>
 </main>
+
+<nav class="dock" aria-label="Room">
+  <button data-panel="jar" aria-pressed="false">&#9733; Star jar</button>
+  <button data-panel="sill" aria-pressed="false">&#10022; Quiet corner</button>
+  <button data-panel="shelf" aria-pressed="false">&#10070; Bookshelf</button>
+  <button data-panel="letter" aria-pressed="false">&#9825; Letter</button>
+  <button data-panel="diary" aria-pressed="false">&#10047; Diary</button>
+</nav>
+
+<div id="diary" role="dialog" aria-label="Pixel diary">
+  <div class="bookwrap">
+    <div class="dbtns"><button id="dToday">today</button><button id="dClose">close</button></div>
+    <div class="book">
+      <section class="dpage">
+        <div class="dbanner">my diary</div>
+        <div class="dhead"><button id="dPrev" aria-label="Previous day">&lt;</button>
+          <div><h3 id="dDate"></h3><small id="dDay"></small></div>
+          <button id="dNext" aria-label="Next day">&gt;</button></div>
+        <p class="dstars" id="dStars"></p>
+        <div class="dtitle">Today's goals</div>
+        <label class="goal"><input type="checkbox" id="gc0" aria-label="Goal 1 done"><input type="text" id="gt0" maxlength="60" placeholder="Write one goal"></label>
+        <label class="goal"><input type="checkbox" id="gc1" aria-label="Goal 2 done"><input type="text" id="gt1" maxlength="60" placeholder="Even a small win counts"></label>
+        <label class="goal"><input type="checkbox" id="gc2" aria-label="Goal 3 done"><input type="text" id="gt2" maxlength="60" placeholder="One more, if you like"></label>
+        <textarea id="dText" placeholder="Write about today…"></textarea>
+      </section>
+      <div class="rings" aria-hidden="true"></div>
+      <section class="dpage"><h3>Past pages</h3><div id="dList"></div></section>
+    </div>
+    <img class="mascot m1" src="mascot1.png" alt="" onerror="this.remove()">
+    <img class="mascot m2" src="mascot2.png" alt="" onerror="this.remove()">
+  </div>
+</div>
 
 <div id="infoModal" class="overlay"><div class="card">
   <h2>A little note</h2>
