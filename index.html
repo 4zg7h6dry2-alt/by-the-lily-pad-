@@ -3,147 +3,78 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Study Sanctuary</title>
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<title>By the Lily Pad ♡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=VT323&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="bg" id="bgDay"></div>
-<div class="bg" id="bgNight"></div>
-<div id="tint"></div>
-<div class="topbar">
-  <button id="noteBtn" class="ghost" aria-label="A little note about your saved data">&#10023; A little note<span id="noteDot"></span></button>
-  <div class="themewrap">
-    <button id="themeBtn" class="ghost" aria-haspopup="true" aria-expanded="false" aria-controls="themeMenu">Theme: <span id="themeName">Auto</span> &#9662;</button>
-    <div id="themeMenu" class="menu" role="group" aria-label="Theme" hidden>
-      <button data-theme="day" aria-pressed="false">Day <span class="sw"><i style="background:#F9E7D7"></i><i style="background:#F5D7C8"></i><i style="background:#C3DCF2"></i><i style="background:#DED0C8"></i><i style="background:#F6C3BF"></i></span></button>
-      <button data-theme="night" aria-pressed="false">Night <span class="sw"><i style="background:#E37795"></i><i style="background:#B85D80"></i><i style="background:#E5897C"></i><i style="background:#EE9E86"></i><i style="background:#2B417B"></i></span></button>
-      <button data-theme="auto" aria-pressed="true">Auto <span class="sw muted">by the clock</span></button>
-    </div>
+<div class="win">
+  <div class="bar"><div class="dots"><i></i><i></i><i></i></div><div class="url" id="url">bythelilypad.study/timer</div></div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-t="timer" aria-selected="true">🌸 Focus</button>
+    <button class="tab" role="tab" data-t="jar" aria-selected="false">✨ Jar</button>
+    <button class="tab" role="tab" data-t="diary" aria-selected="false">📖 Diary</button>
+    <button class="tab" role="tab" data-t="shelf" aria-selected="false">📚 Bookshelf</button>
   </div>
-</div>
-
-<main>
-  <section class="card" id="timerCard">
-    <h1>Study Sanctuary</h1>
-    <div id="notes"></div>
-    <div id="mode">Ready when you are</div>
-    <div id="clock" aria-live="off">25:00</div>
-    <div class="row" style="justify-content:center">
-      <button id="go">Start focus</button>
-      <button id="pause" class="ghost" hidden>Pause</button>
-      <button id="stop" class="ghost" hidden>Stop</button>
-    </div>
-    <div class="row" id="settings">
-      <label>Focus <input id="fMin" type="number" min="1" max="120" value="25" style="width:64px"></label>
-      <label>Break <input id="bMin" type="number" min="1" max="60" value="5" style="width:64px"></label>
-    </div>
-
-    <div id="tea">
-      <svg viewBox="0 0 120 110" width="96" role="img" aria-label="A cup of tea cooling">
-        <g id="steam" fill="none" stroke="#fff3f8" stroke-width="3" stroke-linecap="round">
-          <path d="M45 26c-6-6 6-10 0-18"/><path d="M60 26c-6-6 6-10 0-18"/><path d="M75 26c-6-6 6-10 0-18"/>
-        </g>
-        <clipPath id="cupClip"><path d="M25 38h70v26c0 18-14 30-35 30S25 82 25 64z"/></clipPath>
-        <path d="M25 38h70v26c0 18-14 30-35 30S25 82 25 64z" fill="#fbe3ee"/>
-        <rect id="liquid" x="25" y="42" width="70" height="60" fill="#c0703a" clip-path="url(#cupClip)"/>
-        <path d="M95 46c18-2 18 24-4 24" fill="none" stroke="#fbe3ee" stroke-width="6" stroke-linecap="round"/>
-        <ellipse cx="60" cy="100" rx="42" ry="6" fill="#e9a9c4"/>
-        <path d="M54 66l6 6 6-6" fill="none" stroke="#e9a9c4" stroke-width="3"/>
-      </svg>
-      <p id="teaText" class="muted"></p>
-    </div>
-  </section>
-
-      <section class="card panel" id="pJar">
-      <h2>The little accomplishment jar</h2>
-      <canvas id="jar" width="48" height="64" role="img" aria-label="A bottle filled with glowing liquid and stars"></canvas>
-      <p id="jarText" style="text-align:center"></p>
-    </section>
-
-    <section class="card panel" id="pSill">
-      <h2>The quiet corner</h2>
-      <svg id="sky" viewBox="0 0 300 130" role="img" aria-label="A window that fills with stars" shape-rendering="crispEdges">
-        <defs><linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="s1"/><stop offset="1" class="s2"/></linearGradient></defs>
-        <rect x="2" y="2" width="296" height="126" fill="url(#skyG)"/>
-        <g id="skyStars"></g>
-        <rect x="2" y="2" width="296" height="126" fill="none" stroke="var(--line)" stroke-width="4"/>
-      </svg>
-      <div id="sill" data-l="0">
-        <svg class="it" id="itCandle" viewBox="0 0 60 120" width="60" height="110" aria-label="Candle">
-          <circle id="glow" cx="30" cy="42" r="34" fill="#f6d28b" opacity=".5"/>
-          <rect x="22" y="56" width="16" height="58" rx="3" fill="#fbe3ee"/>
-          <path id="flame" d="M30 28c8 8 8 18 0 22c-8-4-8-14 0-22z" fill="#f6b04a"/>
-        </svg>
-        <svg class="it" id="itFlower" viewBox="0 0 60 120" width="60" height="110" aria-label="Flower">
-          <rect x="22" y="94" width="16" height="20" rx="3" fill="#a15b7e"/>
-          <g id="bloom"><path d="M30 94V50" stroke="#6b8f5a" stroke-width="4"/><path d="M30 78c-12-2-14-10-14-10c10 0 14 4 14 10z" fill="#6b8f5a"/>
-          <g fill="#e9a9c4"><circle cx="30" cy="36" r="9"/><circle cx="20" cy="44" r="9"/><circle cx="40" cy="44" r="9"/><circle cx="23" cy="30" r="9"/><circle cx="37" cy="30" r="9"/></g>
-          <circle cx="30" cy="39" r="6" fill="#f6d28b"/></g>
-        </svg>
+  <main>
+    <section id="timer">
+      <h2 class="px">A softer place to land ♡</h2>
+      <p class="sub">Slow down, breathe, and make room for little things that make you happy.</p>
+      <div id="letterNote" class="note" hidden><b>A letter from yesterday-you</b><p id="letterText"></p><button class="btn ghost" id="letterOk" style="font-size:14px;padding:4px 14px;margin-top:8px">Thank you ♡</button></div>
+      <div id="thoughtNote" class="note" hidden><b>Last time you were…</b><p id="thoughtText"></p></div>
+      <div class="modes">
+        <button class="mode" data-m="focus" aria-pressed="true">Focus 25</button>
+        <button class="mode" data-m="break" aria-pressed="false">Tea break 5</button>
+        <button class="mode" data-m="long" aria-pressed="false">Long break 15</button>
       </div>
-      <p class="muted" id="sillText"></p>
+      <div class="clock" id="clock" aria-live="off">25:00</div>
+      <div class="ctrl"><button class="btn" id="go">Start ♡</button><button class="btn ghost" id="stop">Stop</button></div>
+      <div id="tea" class="card" hidden>
+        <svg viewBox="0 0 120 100" aria-hidden="true"><g class="steam" id="steam"><path d="M42 26c-6-6 6-10 0-18M60 26c-6-6 6-10 0-18M78 26c-6-6 6-10 0-18" stroke="#FFE1F1" stroke-width="3" fill="none" stroke-linecap="round"/></g><path d="M22 34h76v28a30 30 0 0 1-30 30H52a30 30 0 0 1-30-30z" fill="#FFE1F1"/><path d="M98 42h6a10 10 0 0 1 0 22h-8" stroke="#FFE1F1" stroke-width="5" fill="none"/><ellipse id="liquid" cx="60" cy="38" rx="34" ry="5" fill="#C9763D"/><circle cx="50" cy="66" r="3" fill="#2E5D3A"/><circle cx="70" cy="66" r="3" fill="#2E5D3A"/><path d="M54 72q6 5 12 0" stroke="#2E5D3A" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+        <p class="px" id="teaTxt">Your tea is steaming hot</p>
+      </div>
+      <p class="sub" style="margin-top:14px;text-align:center" id="today"></p>
     </section>
 
-    <section class="card panel" id="pShelf">
-      <h2>The forgotten bookshelf</h2>
-      <div class="row"><input type="text" id="topicIn" placeholder="A subject to revisit" style="flex:1;width:auto" maxlength="40"><button id="addTopic">Add</button></div>
-      <div id="shelf"></div>
+    <section id="jar" hidden>
+      <h2 class="px">The Little Accomplishment Jar</h2>
+      <p class="sub">Every finished focus session adds a glowing star. No scores, just you.</p>
+      <div id="glass"></div>
+      <div class="big" id="jarCount"></div>
+      <div id="hist"></div>
     </section>
 
-    <section class="card panel" id="pLetter">
-      <h2>A letter to tomorrow</h2>
-      <div id="letterOut"></div>
-      <textarea id="letterIn" placeholder="Dear tomorrow me…"></textarea>
-      <div class="row" style="margin-top:8px"><button id="saveLetter">Seal the letter</button><span id="letterMsg" class="muted"></span></div>
+    <section id="diary" hidden>
+      <h2 class="px">Diary</h2>
+      <p class="sub">A quiet page for whatever is on your mind.</p>
+      <textarea id="dText" rows="4" placeholder="Dear diary…"></textarea>
+      <div class="ctrl" style="justify-content:flex-start"><button class="btn" id="dSave">Save entry</button></div>
+      <div id="dList"></div>
+      <div class="card"><h2 class="px" style="font-size:20px">A Letter to Tomorrow</h2>
+        <p class="sub">Write a few kind words. You'll see them when you return.</p>
+        <textarea id="lText" rows="3" placeholder="Hey you, tomorrow's going to be okay because…"></textarea>
+        <div class="ctrl" style="justify-content:flex-start"><button class="btn" id="lSave">Seal letter</button></div>
+        <p class="sub" id="lMsg"></p></div>
     </section>
-</main>
 
-<nav class="dock" aria-label="Room">
-  <button data-panel="jar" aria-pressed="false">&#9733; Star jar</button>
-  <button data-panel="sill" aria-pressed="false">&#10022; Quiet corner</button>
-  <button data-panel="shelf" aria-pressed="false">&#10070; Bookshelf</button>
-  <button data-panel="letter" aria-pressed="false">&#9825; Letter</button>
-  <button data-panel="diary" aria-pressed="false">&#10047; Diary</button>
-</nav>
-
-<div id="diary" role="dialog" aria-label="Pixel diary">
-  <div class="bookwrap">
-    <div class="dbtns"><button id="dToday">today</button><button id="dClose">close</button></div>
-    <div class="book">
-      <section class="dpage">
-        <div class="dbanner">my diary</div>
-        <div class="dhead"><button id="dPrev" aria-label="Previous day">&lt;</button>
-          <div><h3 id="dDate"></h3><small id="dDay"></small></div>
-          <button id="dNext" aria-label="Next day">&gt;</button></div>
-        <p class="dstars" id="dStars"></p>
-        <div class="dtitle">Today's goals</div>
-        <label class="goal"><input type="checkbox" id="gc0" aria-label="Goal 1 done"><input type="text" id="gt0" maxlength="60" placeholder="Write one goal"></label>
-        <label class="goal"><input type="checkbox" id="gc1" aria-label="Goal 2 done"><input type="text" id="gt1" maxlength="60" placeholder="Even a small win counts"></label>
-        <label class="goal"><input type="checkbox" id="gc2" aria-label="Goal 3 done"><input type="text" id="gt2" maxlength="60" placeholder="One more, if you like"></label>
-        <textarea id="dText" placeholder="Write about today…"></textarea>
-      </section>
-      <div class="rings" aria-hidden="true"></div>
-      <section class="dpage"><h3>Past pages</h3><div id="dList"></div></section>
-    </div>
-    <img class="mascot m1" src="mascot1.png" alt="" onerror="this.remove()">
-    <img class="mascot m2" src="mascot2.png" alt="" onerror="this.remove()">
-  </div>
+    <section id="shelf" hidden>
+      <h2 class="px">The Forgotten Bookshelf</h2>
+      <p class="sub">Add topics to revisit. Ones you neglect gather dust. Wipe it off when you return.</p>
+      <div class="row"><input type="text" id="bIn" placeholder="e.g. Policy evaluation" maxlength="40"><button class="btn" id="bAdd">Add</button></div>
+      <div class="shelf" id="books"></div>
+    </section>
+  </main>
 </div>
+<footer>made with a little magic ♡ 2026</footer>
 
-<div id="infoModal" class="overlay"><div class="card">
-  <h2>A little note</h2>
-  <p>Your stars, notes, letters and bookshelf are kept inside this browser, on this device. Nothing is sent anywhere.</p>
-  <p>That means if you switch to another phone or computer, or clear your browser data, your sanctuary will start fresh. Your stars will be waiting here if you come back to the same device.</p>
-  <div class="row" style="margin-top:10px"><button id="closeInfo">Okay, got it</button></div>
-</div></div>
-
-<div id="modal" class="overlay"><div class="card">
-  <h2>The last thought</h2>
-  <p>What were you in the middle of? Leave a note for when you come back.</p>
-  <textarea id="thoughtIn" placeholder="I was working on…"></textarea>
-  <div class="row" style="margin-top:10px"><button id="saveThought">Save note</button><button id="skipThought" class="ghost">Skip</button></div>
-</div></div>
+<dialog id="dlg"><form method="dialog" id="thoughtForm">
+  <h2 class="px" style="font-size:22px">The Last Thought</h2>
+  <p class="sub" id="dlgMsg">What were you in the middle of? Future-you will thank you.</p>
+  <textarea id="thought" rows="3" placeholder="I was on page 12, about to…"></textarea>
+  <div class="ctrl"><button class="btn" value="save">Save ♡</button><button class="btn ghost" value="skip">Skip</button></div>
+</form></dialog>
 
 <script src="script.js"></script>
 </body>
