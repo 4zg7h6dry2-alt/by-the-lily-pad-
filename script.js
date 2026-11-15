@@ -1,48 +1,74 @@
-:root{--midnight:#0B1B4D;--indigo:#1E2F6B;--sky:#3A4F9A;--twilight:#5B6EC1;--moon:#7EA0E6;--lily:#2E5D3A;--mint:#AEE3A9;--lotus:#D96BB3;--blush:#F3A6D9;--petal:#FFE1F1;--gold:#F8D47A;--peach:#F2B36F;--lav:#D9C7F1;--dream:#8A6FA8}
-*{box-sizing:border-box;margin:0}
-body{font-family:Arial,Helvetica,sans-serif;font-weight:500;background:radial-gradient(circle at 80% 8%,#2a3f8c 0,var(--midnight) 55%) fixed;color:var(--petal);min-height:100vh;padding:20px 12px 40px;display:flex;justify-content:center}
-.px{font-family:'Pixelify Sans','VT323',monospace;font-weight:700}
-.win{width:100%;max-width:760px;background:var(--indigo);border:3px solid var(--twilight);border-radius:14px;box-shadow:6px 6px 0 #070f33;overflow:hidden;height:fit-content}
-.bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--midnight)}
-.dots{display:flex;gap:6px}.dots i{width:11px;height:11px;border-radius:50%;background:var(--blush)}.dots i:nth-child(2){background:var(--gold)}.dots i:nth-child(3){background:var(--mint)}
-.url{flex:1;background:var(--indigo);border-radius:20px;padding:5px 14px;font-size:13px;color:var(--lav);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tabs{display:flex;gap:4px;padding:8px 10px 0;background:var(--midnight);overflow-x:auto}
-.tab{font-family:'Pixelify Sans',monospace;font-weight:700;font-size:16px;border:0;cursor:pointer;padding:8px 14px;border-radius:10px 10px 0 0;background:var(--sky);color:var(--lav);white-space:nowrap}
-.tab[aria-selected=true]{background:var(--indigo);color:var(--petal)}
-.tab:focus-visible,button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-main{padding:22px 20px 26px;min-height:440px}
-section[hidden]{display:none}
-h2{font-size:26px;margin-bottom:4px}
-.sub{color:var(--lav);font-size:14px;margin-bottom:16px}
-.card{background:var(--midnight);border-radius:14px;padding:16px;margin-top:14px}
-.btn{font-family:'Pixelify Sans',monospace;font-weight:700;font-size:18px;background:var(--blush);color:var(--midnight);border:0;border-radius:999px;padding:10px 22px;cursor:pointer;transition:transform .15s,background .15s}
-.btn:hover{background:var(--twilight);color:var(--petal);transform:translateY(-2px)}
-.btn.ghost{background:transparent;color:var(--lav);border:2px solid var(--dream)}
-textarea,input[type=text]{width:100%;font:500 15px Arial,sans-serif;background:var(--indigo);color:var(--petal);border:2px solid var(--twilight);border-radius:10px;padding:10px;resize:vertical}
-::placeholder{color:#8e9bd1}
-.modes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.mode{font-family:'Pixelify Sans',monospace;font-weight:700;font-size:15px;background:var(--midnight);color:var(--lav);border:2px solid var(--sky);border-radius:999px;padding:6px 16px;cursor:pointer}
-.mode[aria-pressed=true]{background:var(--lotus);color:#fff;border-color:var(--lotus)}
-.clock{font-family:'VT323',monospace;font-size:clamp(84px,24vw,140px);line-height:1;text-align:center;color:var(--gold);text-shadow:0 0 18px #f8d47a55;margin:14px 0 4px}
-.ctrl{display:flex;gap:10px;justify-content:center;margin:10px 0}
-.note{border-left:4px solid var(--gold);background:var(--midnight);padding:10px 14px;border-radius:0 10px 10px 0;margin-bottom:12px;font-size:14px}
-.note b{font-family:'Pixelify Sans',monospace;color:var(--gold)}
-#tea{text-align:center}#tea svg{width:150px;height:auto}
-.steam{animation:steam 3s ease-in-out infinite;transform-origin:center bottom}
-@keyframes steam{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-#glass{position:relative;width:190px;height:230px;margin:6px auto;border:4px solid var(--lav);border-top-width:10px;border-radius:18px 18px 40px 40px;background:#7ea0e61a;overflow:hidden}
-.star{position:absolute;width:18px;height:18px;color:var(--gold);font-size:18px;line-height:18px;text-align:center;text-shadow:0 0 8px var(--gold);animation:tw 3s ease-in-out infinite}
-@keyframes tw{50%{opacity:.55;transform:scale(.85)}}
-.big{font-family:'VT323',monospace;font-size:34px;text-align:center;color:var(--gold)}
-.row{display:flex;gap:8px;margin-top:10px}.row input{flex:1}
-.entry{background:var(--midnight);border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px;white-space:pre-wrap}.entry small{display:block;color:var(--blush);margin-bottom:4px;font-family:'Pixelify Sans',monospace;font-size:14px}
-.shelf{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;padding-bottom:10px;border-bottom:8px solid var(--dream)}
-.book{position:relative;width:96px;min-height:120px;border-radius:6px 6px 2px 2px;padding:10px 8px;background:var(--lotus);color:#fff;font-size:13px;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
-.book:nth-child(3n+2){background:var(--twilight)}.book:nth-child(3n){background:var(--lily)}
-.book .dust{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 30% 30%,#d8d2c4 0 3px,transparent 4px),radial-gradient(circle at 70% 60%,#d8d2c4 0 4px,transparent 5px),radial-gradient(circle at 40% 80%,#d8d2c4 0 3px,transparent 4px),linear-gradient(#cfc8b8cc,#cfc8b8cc);transition:opacity .6s}
-.book button{position:relative;font:700 11px 'Pixelify Sans',monospace;border:0;border-radius:8px;background:var(--petal);color:var(--midnight);padding:4px;cursor:pointer}
-.x{position:absolute;top:2px;right:4px;z-index:2;background:none!important;color:#fff!important;font-size:14px!important}
-dialog{margin:auto;background:var(--indigo);color:var(--petal);border:3px solid var(--blush);border-radius:16px;padding:22px;width:min(92vw,420px)}
-dialog::backdrop{background:#050c2acc}
-footer{text-align:center;color:var(--lav);font-size:13px;margin-top:18px}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const KEY='lilypond-v1',GOAL=8,MIN={focus:25,break:5,long:15};
+let S={};try{S=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+S.stars=S.stars||{};S.diary=S.diary||[];S.books=S.books||[];S.cycles=S.cycles||0;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const day=()=>new Date().toLocaleDateString('en-CA');
+const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+let mode='focus',left=MIN.focus*60,total=left,end=0,timer=null;
+
+/* popups */
+function openTool(id){if(id==='d-thought')ask('What were you in the middle of? Future-you will thank you.',()=>{});else{render();$('#'+id).showModal();}}
+$$('[data-open]').forEach(b=>b.onclick=()=>openTool(b.dataset.open));
+$$('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d||e.target.closest('[data-close]'))d.close()}));
+function ask(msg,after){$('#dlgMsg').textContent=msg;$('#prevThought').textContent=S.thought?'Your last note: '+S.thought:'';
+  $('#thought').value='';const d=$('#d-thought');d.returnValue='';d.showModal();
+  d.onclose=()=>{const v=$('#thought').value.trim();if(d.returnValue==='save'&&v){S.thought=v;save();}after();render();};}
+
+/* timer */
+function paint(){$('#clock').textContent=fmt(left);document.title=(timer?fmt(left)+' · ':'')+'By the Lily Pad ♡';
+  const brk=mode!=='focus',p=brk?Math.min(1,1-left/total):0;
+  $('#liquid').setAttribute('fill',p<.5?'#C9763D':p<.85?'#B98A5E':'#9aa7b8');
+  $('#steam').style.opacity=brk?Math.max(0,1-p*1.3):1;
+  $('#teaTxt').textContent=!brk?'Your cup is waiting. Start a tea break to watch it cool.':p>=1?'Your tea is finished ♡':p<.35?'Your tea is steaming hot':p<.7?'Your tea is warm and cozy':'Your tea is cooling down…';
+  $('#teaTime').textContent=brk?fmt(left)+' left on your break':'';
+  $('#b-tea').classList.toggle('live',brk&&!!timer);
+  const idle=!timer&&left===total;$('#go').textContent=timer?'Running ♡':idle?'Start ♡':'Resume ♡';$('#go').disabled=!!timer;$('#pause').disabled=!timer;$('#stop').disabled=idle;}
+function setMode(m){clearInterval(timer);timer=null;mode=m;left=total=MIN[m]*60;
+  $$('.mode').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));paint();}
+$$('.mode').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+$('#go').onclick=()=>{if(timer)return;end=Date.now()+left*1000;timer=setInterval(tick,500);paint();};
+$('#pause').onclick=()=>{if(!timer)return;clearInterval(timer);timer=null;paint();};
+function tick(){left=Math.max(0,Math.round((end-Date.now())/1000));paint();if(left<=0)finish();}
+function finish(){clearInterval(timer);timer=null;
+  if(mode==='focus'){const d=day();S.stars[d]=(S.stars[d]||0)+1;S.cycles++;save();
+    ask('Star added to your meter! What were you in the middle of?',()=>setMode(S.cycles%4===0?'long':'break'));}
+  else setMode('focus');}
+$('#stop').onclick=()=>{if(mode==='focus'&&total-left>60){clearInterval(timer);timer=null;ask('Stopping early is okay. What were you doing?',()=>setMode('focus'));}else setMode(mode);};
+
+/* render */
+function render(){
+  const n=S.stars[day()]||0,f=Math.min(n,GOAL);
+  $('#today').textContent=n?`Today: ${n} little star${n>1?'s':''} ✨`:'Your meter is waiting for its first star.';
+  $('#meter').innerHTML=Array.from({length:GOAL},(_,i)=>`<i class="seg${i<f?' on':''}"></i>`).join('');
+  $('#meterTxt').textContent=`${n} of ${GOAL} stars · ${Math.round(f/GOAL*100)}%`;
+  $('#hist').innerHTML=Object.keys(S.stars).sort().reverse().slice(0,7).map(d=>`<div class="hrow"><small>${d}</small><div class="mini"><b style="width:${Math.min(100,S.stars[d]/GOAL*100)}%"></b></div><span>${S.stars[d]}</span></div>`).join('');
+  $('#thoughtNote').hidden=!S.thought;$('#thoughtText').textContent=S.thought||'';
+  const L=S.letter,show=!!(L&&L.date<day()&&!L.read);$('#letterNote').hidden=!show;if(show)$('#letterText').textContent=L.text;
+  $('[data-open=d-letter]').classList.toggle('new',show);
+  $('#dDate').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+  $('#dList').innerHTML=S.diary.length?S.diary.map(e=>`<div class="entry"><small>${esc(e.d)}</small>${esc(e.t)}</div>`).join(''):'<p class="entry">No pages yet. Your first entry will land here.</p>';
+  const now=Date.now();
+  $('#books').innerHTML=S.books.length?S.books.map((b,i)=>{const dd=Math.floor((now-b.last)/864e5);
+    return `<div class="book"><button class="xb" data-del="${i}" aria-label="Remove ${esc(b.name)}">×</button><b>${esc(b.name)}</b><span>${dd?dd+'d untouched':'fresh today'}</span><div class="dust" style="opacity:${Math.min(1,dd/10).toFixed(2)}"></div><button data-dust="${i}">Dust off ✨</button></div>`}).join(''):'<p class="sub">Your shelf is empty. Add a topic to come back to.</p>';}
+/* diary, letter, shelf */
+$('#dSave').onclick=()=>{const t=$('#dText').value.trim();if(!t)return;S.diary.unshift({d:new Date().toLocaleString(),t});$('#dText').value='';save();render();};
+$('#lSave').onclick=()=>{const t=$('#lText').value.trim();if(!t)return;S.letter={text:t,date:day(),read:false};$('#lText').value='';save();$('#lMsg').textContent='Sealed. It will be waiting for you tomorrow ♡';};
+$('#letterOk').onclick=()=>{S.letter.read=true;save();render();};
+$('#bAdd').onclick=()=>{const v=$('#bIn').value.trim();if(!v)return;S.books.push({name:v,last:Date.now()});$('#bIn').value='';save();render();};
+$('#bIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('#bAdd').click()});
+$('#books').onclick=e=>{const t=e.target;if(t.dataset.dust!==undefined){S.books[t.dataset.dust].last=Date.now();save();render();}
+  if(t.dataset.del!==undefined){S.books.splice(t.dataset.del,1);save();render();}};
+/* backgrounds: gradient themes that change the whole page */
+const THEMES=[
+  {name:'Twilight pond',g:['#F8E6D6','#F4C1BB','#DAC2CA','#F9D3C4','#9ACAF2']},
+  {name:'Rose dusk',g:['#b24a8f','#e58a6a','#4a2252']},
+  {name:'Mint moon',g:['#2f8f86','#4a6fb5','#17304f']},
+  {name:'Lavender night',g:['#2E1A47','#5C3A8B','#8B5CB8','#B88BD4','#D4B8E8']}];
+S.themeId=S.themeId||0;
+function applyTheme(){const t=THEMES[S.themeId]||THEMES[0],r=document.documentElement.style;r.setProperty('--g1',t.g[0]);r.setProperty('--g2',t.g[1]);r.setProperty('--g3',t.g[2]);}
+function drawThemes(){$('#themes').innerHTML=THEMES.map((t,i)=>`<button class="theme${S.themeId===i?' on':''}" data-th="${i}" aria-label="${esc(t.name)}" title="${esc(t.name)}" style="background:linear-gradient(160deg,${t.g[0]},${t.g[1]} 60%,${t.g[2]})"></button>`).join('');}
+$('#themes').onclick=e=>{const b=e.target.closest('[data-th]');if(!b)return;S.themeId=+b.dataset.th;save();applyTheme();drawThemes();};
+applyTheme();drawThemes();
+paint();render();
