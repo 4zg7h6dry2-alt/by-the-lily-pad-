@@ -24,6 +24,9 @@
         <a class="nav-link" href="#diary">Diary</a>
         <a class="nav-link" href="#about">About Me</a>
         <a class="nav-link" href="#contact">Contact Me</a>
+        <button class="nav-link nav-note" id="note-open" type="button" aria-haspopup="dialog">
+          Read me <span class="heart" aria-hidden="true">&#9829;</span>
+        </button>
       </nav>
       <!-- Resource search goes here later -->
     </header>
@@ -38,10 +41,20 @@
 
     <!-- CENTRAL WORKSPACE (Kitsu, timer, diary window, later) -->
     <main class="workspace" id="home">
+      <!-- KITSU DIALOGUE BOX -->
+      <section class="kitsu" aria-label="Kitsu">
+        <!-- SPRITE PLACEHOLDER: Kelly's Kitsu sprites go here (sleeping, reading, tea, annoyed, happy) -->
+        <div class="kitsu-portrait placeholder-box" id="kitsu-portrait" aria-hidden="true">Kitsu</div>
+        <div class="kitsu-box">
+          <p class="kitsu-name">Kitsu <span class="kitsu-title">Tea House Attendant</span></p>
+          <p class="kitsu-text" id="kitsu-text" aria-live="polite"></p>
+          <button class="kitsu-next" id="kitsu-next" type="button" aria-label="Hear something else from Kitsu">&#9660;</button>
+        </div>
+      </section>
+
       <section class="card">
-        <h2 class="card-title">Workspace</h2>
-        <p class="card-note">Kitsu, the timer and the diary window will live here.</p>
-        <button class="btn" type="button">Sample button</button>
+        <h2 class="card-title">Timer</h2>
+        <p class="card-note">The Pomodoro timer arrives in step 4.</p>
       </section>
     </main>
 
@@ -58,6 +71,27 @@
     </aside>
 
   </div>
+
+  <!-- STORAGE NOTE (game-update style popup) -->
+  <div class="modal" id="note-modal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="note-title">
+      <div class="modal-bar">
+        <span class="modal-bar-title" id="note-title"><span class="heart" aria-hidden="true">&#9829;</span> Read me, I'm important</span>
+        <button class="modal-x" id="note-x" type="button" aria-label="Close">X</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-line">A little note about your things:</p>
+        <ul class="modal-list">
+          <li>Your diary, notes and bookshelf are saved in this browser, on this device.</li>
+          <li>They won't follow you to other devices or browsers.</li>
+          <li>Clearing your browser data will clear them too.</li>
+        </ul>
+        <p class="modal-line">Tip: keep using the same browser and your nook will always be here.</p>
+        <button class="btn" id="note-ok" type="button">Got it &#9829;</button>
+      </div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
