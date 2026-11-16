@@ -158,3 +158,132 @@ a { color: inherit; }
     padding: var(--space-3);
   }
 }
+
+/* 6. STORAGE NOTE (game-update popup) ---------------------- */
+.nav-note {
+  font: inherit;
+  font-weight: 500;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--gold);
+  cursor: pointer;
+}
+.heart { color: var(--sakura); }
+.nav-note.unread .heart { animation: heart-beat 1.6s ease-in-out infinite; }
+
+@keyframes heart-beat {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.3); }
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: rgba(41, 39, 39, 0.6);
+  z-index: 10;
+}
+.modal[hidden] { display: none; }
+
+.modal-box {
+  width: 100%;
+  max-width: 400px;
+  background: var(--ivory);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: 4px 4px 0 var(--charcoal);
+  font-family: var(--font-pixel);
+}
+.modal-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--burgundy);
+  color: var(--ivory);
+  border-bottom: var(--border);
+}
+.modal-bar-title { font-size: 16px; }
+.modal-x {
+  font-family: var(--font-pixel);
+  color: var(--ivory);
+  background: var(--vermilion);
+  border: 1px solid var(--charcoal);
+  border-radius: var(--radius);
+  padding: 0 var(--space-2);
+  cursor: pointer;
+}
+.modal-body { padding: var(--pad-y) var(--pad-x) var(--space-4); }
+.modal-line { margin: var(--space-2) 0; }
+.modal-list { margin: var(--space-2) 0; padding-left: var(--space-5); }
+.modal-list li { margin-bottom: var(--space-1); }
+.modal-body .btn { font-family: var(--font-pixel); margin-top: var(--space-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-note.unread .heart { animation: none; }
+}
+
+/* 7. KITSU DIALOGUE (handheld-RPG style) ------------------- */
+.workspace { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.kitsu {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+.kitsu-portrait {
+  flex: none;
+  width: 80px;
+  height: auto;
+  min-height: 80px;
+  background: var(--sakura);
+  border: 2px solid var(--charcoal);
+  border-radius: var(--radius);
+}
+.kitsu-box {
+  position: relative;
+  flex: 1;
+  min-height: 88px;
+  padding: var(--pad-y) var(--pad-x);
+  background: var(--charcoal);
+  color: var(--ivory);
+  border: 2px solid var(--charcoal);
+  border-radius: var(--radius);
+  box-shadow: inset 0 0 0 2px var(--gold), 3px 3px 0 var(--burgundy);
+  font-family: var(--font-pixel);
+}
+.kitsu-name {
+  margin: 0 0 var(--space-1);
+  font-size: 14px;
+  color: var(--gold);
+}
+.kitsu-title { color: var(--sakura); font-size: 12px; margin-left: var(--space-1); }
+.kitsu-text {
+  margin: 0;
+  padding-right: var(--space-5);
+  font-size: 18px;
+  min-height: 54px;
+}
+.kitsu-next {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-1);
+  background: transparent;
+  border: 0;
+  color: var(--vermilion);
+  font-size: 16px;
+  cursor: pointer;
+  animation: kitsu-blink 1s steps(2, start) infinite;
+}
+@keyframes kitsu-blink { to { visibility: hidden; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .kitsu-next { animation: none; }
+}
+@media (max-width: 639px) {
+  .kitsu-portrait { width: 64px; min-height: 64px; }
+  .kitsu-text { font-size: 16px; }
+}
