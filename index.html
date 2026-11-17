@@ -28,7 +28,21 @@
           Read me <span class="heart" aria-hidden="true">&#9829;</span>
         </button>
       </nav>
-      <!-- Resource search goes here later -->
+      <!-- SHRINE OF SOURCES: searchable list of genuine research sites -->
+      <div class="shrine" id="shrine">
+        <form class="shrine-form" id="shrine-form" role="search">
+          <label class="visually-hidden" for="shrine-input">Search the Shrine of Sources</label>
+          <input class="shrine-input" id="shrine-input" type="search" placeholder="Search the Shrine of Sources..." autocomplete="off">
+        </form>
+        <div class="shrine-panel" id="shrine-panel" hidden>
+          <div class="shrine-head">
+            <p class="shrine-note">Kitsu's picks for research, sources and citations. Access and rules can change, so check each site.</p>
+            <button class="win-btn win-close" id="shrine-close" type="button" aria-label="Close the shrine">X</button>
+          </div>
+          <p class="shrine-count" id="shrine-count" role="status"></p>
+          <div class="shrine-list" id="shrine-list"></div>
+        </div>
+      </div>
     </header>
 
     <!-- LEFT SIDEBAR (mood card, later) -->
@@ -86,7 +100,51 @@
           <p class="progress-count" id="progress-count">No sessions yet. No rush.</p>
         </div>
       </section>
-    <!-- DIARY WINDOW -->
+    <!-- A LETTER TO TOMORROW -->
+      <section class="card letter" id="letter">
+        <h2 class="card-title">A Letter to Tomorrow</h2>
+
+        <div class="letter-banner" id="letter-banner" hidden>
+          <p class="letter-banner-text" id="letter-banner-text"></p>
+          <button class="btn btn-small" id="letter-open" type="button">Open letter</button>
+        </div>
+
+        <div class="letter-read" id="letter-read" hidden>
+          <p class="letter-read-date" id="letter-read-date"></p>
+          <p class="letter-paper" id="letter-read-text"></p>
+          <button class="btn btn-quiet btn-small" id="letter-read-close" type="button">Keep it safe</button>
+        </div>
+
+        <form class="letter-form" id="letter-form">
+          <label class="letter-label" for="letter-input">Write something kind for tomorrow's you.</label>
+          <textarea class="letter-input" id="letter-input" rows="3" maxlength="500" placeholder="Dear future me..."></textarea>
+          <div class="letter-actions">
+            <button class="btn" id="letter-seal" type="submit">Seal letter</button>
+            <p class="letter-status" id="letter-status" role="status"></p>
+          </div>
+        </form>
+
+        <div class="letter-history" id="letter-history" hidden>
+          <h3 class="letter-history-title">Letters you've read</h3>
+          <ul class="diary-list" id="letter-history-list"></ul>
+        </div>
+      </section>
+
+      <!-- THE FORGOTTEN BOOKSHELF -->
+      <section class="card bookshelf" id="bookshelf">
+        <h2 class="card-title">The Forgotten Bookshelf</h2>
+        <p class="card-note">Add subjects or topics you want to come back to. The longer a book sits untouched, the dustier it gets. Revise it, then tap "Dust off".</p>
+        <p class="shelf-legend" id="shelf-legend"></p>
+        <form class="shelf-form" id="shelf-form">
+          <label class="visually-hidden" for="shelf-input">Subject or topic</label>
+          <input class="shelf-input" id="shelf-input" type="text" maxlength="40" placeholder="e.g. PAD 402, Chapter 3" autocomplete="off">
+          <button class="btn" type="submit">Add to shelf</button>
+        </form>
+        <ul class="shelf-grid" id="shelf-grid"></ul>
+        <p class="shelf-empty" id="shelf-empty">Your shelf is empty. Add your first book above.</p>
+      </section>
+
+      <!-- DIARY WINDOW -->
       <section class="window" id="diary" aria-label="Diary">
         <div class="window-bar">
           <!-- ICON PLACEHOLDER: Kelly's small pixel-art title-bar asset goes here -->
@@ -159,9 +217,9 @@
       <div class="modal-body">
         <p class="modal-line">A little note about your things:</p>
         <ul class="modal-list">
-          <li>Your diary, notes and bookshelf are saved in this browser, on this device.</li>
+          <li>Hi fox! Your diary, notes and bookshelf are saved in this browser, on this device.</li>
           <li>They won't follow you to other devices or browsers.</li>
-          <li>Clearing your browser data will clear them too.</li>
+          <li>Clearing your browser data will clear them too. You are probably so overwhelmed with all the work sweetie. kitsu thought you should know </li>
         </ul>
         <p class="modal-line">Tip: keep using the same browser and your nook will always be here.</p>
         <button class="btn" id="note-ok" type="button">Got it &#9829;</button>
