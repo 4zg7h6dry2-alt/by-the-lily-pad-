@@ -89,6 +89,9 @@
           <button class="mode-btn" type="button" data-mode="short" aria-pressed="false">Short break</button>
           <button class="mode-btn" type="button" data-mode="long" aria-pressed="false">Long break</button>
         </div>
+        <label class="focus-length" for="focus-minutes">Focus length
+          <input class="focus-input" id="focus-minutes" type="number" min="1" max="180" step="1" inputmode="numeric"> minutes
+        </label>
         <p class="timer-display" id="timer-display" role="timer" aria-live="off">25:00</p>
         <div class="timer-actions">
           <button class="btn" id="timer-start" type="button">Start</button>
@@ -217,13 +220,30 @@
       <div class="modal-body">
         <p class="modal-line">A little note about your things:</p>
         <ul class="modal-list">
-          <li>Hi fox! Your diary, notes and bookshelf are saved in this browser, on this device.</li>
-          <li>They won't follow you to other devices or browsers.</li>
-          <li>Clearing your browser data will clear them too. You are probably so overwhelmed with all the work sweetie. kitsu thought you should know </li>
+          <li>Hi foxy! Your diary, notes and bookshelf are saved in this browser, on this device.</li>
+          <li>They won't follow you to other devices or browsers. You must be so overwhelmed with work sweetie. Kitsu thought you should know</li>
+          <li>Clearing your browser data will clear them too.</li>
         </ul>
         <p class="modal-line">Tip: keep using the same browser and your nook will always be here.</p>
         <button class="btn" id="note-ok" type="button">Got it &#9829;</button>
       </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <button class="link-btn" type="button" data-info="credits">Credits &amp; Acknowledgements</button>
+    <span aria-hidden="true">&middot;</span>
+    <button class="link-btn" type="button" data-info="welcome">A note to visitors</button>
+  </footer>
+
+  <!-- INFO MODAL (credits, welcome, about, contact) -->
+  <div class="modal" id="info-modal" hidden>
+    <div class="modal-box info-box" role="dialog" aria-modal="true" aria-labelledby="info-title">
+      <div class="modal-bar">
+        <span class="modal-bar-title" id="info-title"></span>
+        <button class="modal-x" id="info-x" type="button" aria-label="Close">X</button>
+      </div>
+      <div class="info-body" id="info-body"></div>
     </div>
   </div>
 
