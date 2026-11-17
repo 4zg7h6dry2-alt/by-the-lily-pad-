@@ -52,10 +52,83 @@
         </div>
       </section>
 
-      <section class="card">
-        <h2 class="card-title">Timer</h2>
-        <p class="card-note">The Pomodoro timer arrives in step 4.</p>
+      <!-- THE LAST THOUGHT -->
+      <section class="card thought" id="last-thought" hidden>
+        <h2 class="card-title">The Last Thought</h2>
+        <p class="thought-recall" id="thought-recall" hidden></p>
+        <form class="thought-form" id="thought-form" hidden>
+          <label class="thought-label" id="thought-label" for="thought-input">What did you accomplish?</label>
+          <textarea class="thought-input" id="thought-input" rows="3" maxlength="280"></textarea>
+          <div class="thought-actions">
+            <button class="btn" type="submit">Save thought</button>
+            <button class="btn btn-quiet" id="thought-skip" type="button">Not now</button>
+          </div>
+        </form>
       </section>
+
+      <!-- POMODORO TIMER + LITTLE ACCOMPLISHMENT BAR -->
+      <section class="card timer-card" id="timer">
+        <h2 class="card-title">Study Timer</h2>
+        <div class="mode-tabs" role="group" aria-label="Timer mode">
+          <button class="mode-btn" type="button" data-mode="focus" aria-pressed="true">Focus</button>
+          <button class="mode-btn" type="button" data-mode="short" aria-pressed="false">Short break</button>
+          <button class="mode-btn" type="button" data-mode="long" aria-pressed="false">Long break</button>
+        </div>
+        <p class="timer-display" id="timer-display" role="timer" aria-live="off">25:00</p>
+        <div class="timer-actions">
+          <button class="btn" id="timer-start" type="button">Start</button>
+          <button class="btn btn-quiet" id="timer-reset" type="button">Reset</button>
+        </div>
+
+        <div class="progress" aria-label="Today's study sessions">
+          <div class="progress-bar" id="progress-bar" role="img" aria-label="No sessions yet today"></div>
+          <p class="progress-count" id="progress-count">No sessions yet. No rush.</p>
+        </div>
+      </section>
+    <!-- DIARY WINDOW -->
+      <section class="window" id="diary" aria-label="Diary">
+        <div class="window-bar">
+          <!-- ICON PLACEHOLDER: Kelly's small pixel-art title-bar asset goes here -->
+          <span class="window-icon placeholder-box" aria-hidden="true">icon</span>
+          <h2 class="window-title-wrap">
+            <button class="window-title" id="diary-title" type="button" title="Click to rename">My Diary</button>
+            <input class="window-title-input" id="diary-title-input" type="text" maxlength="24" aria-label="Window title" hidden>
+          </h2>
+          <div class="window-controls">
+            <button class="win-btn win-min" id="win-min" type="button" aria-label="Minimise diary">_</button>
+            <button class="win-btn win-max" id="win-max" type="button" aria-label="Maximise diary">&#9633;</button>
+            <button class="win-btn win-close" id="win-close" type="button" aria-label="Close diary">X</button>
+          </div>
+        </div>
+        <div class="window-body" id="diary-body">
+          <div class="diary-list-pane">
+            <button class="btn btn-small" id="diary-new" type="button">New entry</button>
+            <label class="diary-filter">Jump to date
+              <input type="date" id="diary-date-filter">
+            </label>
+            <button class="btn btn-quiet btn-small" id="diary-clear-filter" type="button" hidden>Show all</button>
+            <ul class="diary-list" id="diary-list"></ul>
+          </div>
+          <div class="diary-editor">
+            <p class="diary-meta" id="diary-meta"></p>
+            <input class="diary-entry-title" id="diary-entry-title" type="text" maxlength="60" placeholder="Entry title (optional)" aria-label="Entry title">
+            <textarea class="diary-text" id="diary-text" placeholder="Dear diary..." aria-label="Diary entry"></textarea>
+            <div class="diary-actions">
+              <button class="btn" id="diary-save" type="button">Save entry</button>
+              <button class="btn btn-quiet" id="diary-delete" type="button" disabled>Delete</button>
+              <p class="diary-status" id="diary-status" role="status"></p>
+            </div>
+            <div class="diary-confirm" id="diary-confirm" hidden>
+              <p>Delete this entry for good?</p>
+              <button class="btn btn-small" id="diary-confirm-yes" type="button">Yes, delete</button>
+              <button class="btn btn-quiet btn-small" id="diary-confirm-no" type="button">Keep it</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="diary-closed" id="diary-closed" hidden>
+        <button class="btn" id="diary-reopen" type="button">Open diary</button>
+      </div>
     </main>
 
     <!-- RIGHT SIDEBAR (clock + quote, later) -->
