@@ -7,7 +7,7 @@
 :root {
   /* Palette */
   --vermilion: #C74736;
-  --ivory:     #F6EBD5;
+  --ivory:     #86313C;
   --sakura:    #DFA1A5;
   --burgundy:  #642D3B;
   --charcoal:  #292727;
@@ -855,3 +855,37 @@ a { color: inherit; }
 
 /* 19. DIARY TITLE-BAR ICON ---------------------------------- */
 .window-icon-img { flex: none; display: block; height: 28px; width: auto; }
+
+/* 20. NAV ICONS + SEARCH BOX ART ---------------------------- */
+.nav-link { display: inline-flex; align-items: center; gap: var(--space-1); }
+.nav-icon { display: block; width: 24px; height: 24px; }
+@media (min-width: 1024px) { .nav-icon { width: 20px; height: 20px; } }
+
+/* The search bar art (search-box.png) is the background; the input sits inside its cream field */
+.shrine {
+  flex: none;
+  width: min(100%, 300px);
+  aspect-ratio: 2.611;
+  background: url("search-box.png") center / 100% 100% no-repeat;
+}
+.shrine-form { position: absolute; inset: 0; margin: 0; }
+.shrine-input {
+  position: absolute;
+  left: 17%;
+  top: 37.5%;
+  width: 53%;
+  height: 24%;
+  padding: 0 var(--space-1);
+  font-size: 12px;
+  color: var(--charcoal);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+.shrine-input:focus-visible { outline-offset: 0; }
+.shrine-go { position: absolute; left: 72.9%; top: 31.4%; width: 14.5%; height: 34.8%; padding: 0; background: transparent; border: 0; border-radius: 50%; cursor: pointer; }
+@media (min-width: 1024px) { .shrine { width: 230px; } }
+@media (max-width: 639px) {
+  .shrine { position: relative; flex: none; }
+  .shrine-panel { left: 0; right: auto; width: min(440px, calc(100vw - 48px)); }
+}
