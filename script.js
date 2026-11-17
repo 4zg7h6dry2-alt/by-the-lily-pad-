@@ -655,12 +655,11 @@ const Diary = (function () {
 
 // ---- Step 7: Sidebar (mood, clock, quote) ----
 
-// Moods use Kelly's sprite sheet: image.png (1536 x 1024), saved in the same folder as index.html.
-// Order of the faces matches the MOODS list below (3 rows of 6).
-const SHEET = {
-  w: 1536, h: 1024, cell: 243,
-  x: [[29, 283, 532, 786, 1043, 1299], [20, 280, 535, 786, 1049, 1304], [24, 285, 535, 787, 1043, 1302]],
-  bottom: [297, 619, 933]
+// Mood board faces: mood-board.png (1536 x 1024), saved in the same folder as index.html.
+// One mask per family. Each window is a 490 x 490 square: [x, y] of its top-left corner.
+const MASK_SHEET = {
+  w: 1536, h: 1024, cell: 490,
+  win: { tender: [20, 16], calm: [528, 16], bright: [1046, 16], thinking: [22, 520], heavy: [531, 520], intense: [1039, 520] }
 };
 const MOODS = [
   { id: "melancholic",   name: "Melancholic",   text: "A soft, quiet sadness with a little beauty in it." },
@@ -683,66 +682,124 @@ const MOODS = [
   { id: "uninspired",    name: "Uninspired",    text: "Ideas are hiding and motivation is on a tea break." }
 ];
 
-// Mood log: { "2026-11-17": [{ mood: "serene", at: ISO }, ...] }  (last one = current mood)
+// Mood families: each shares one kimono-fox sprite (fox-moods.png) and one colour.
+// The small family masks (mood-board.png) are used on the mood board.
+const FAMILIES = [
+  { id: "tender",   name: "Tender & Wistful", moods: ["nostalgic", "sentimental", "yearning"] },
+  { id: "calm",     name: "Calm & Still",     moods: ["serene", "tranquil", "content"] },
+  { id: "bright",   name: "Bright & Playful", moods: ["whimsical", "hopeful", "curious"] },
+  { id: "thinking", name: "Thinking",         moods: ["contemplative", "pensive", "bewildered"] },
+  { id: "heavy",    name: "Heavy & Low",      moods: ["melancholic", "disenchanted", "uninspired"] },
+  { id: "intense",  name: "Intense",          moods: ["restless", "overstimulated", "enamoured"] }
+];
+// Where each fox sits in fox-moods.png (1536 x 1024): [x, y, width, height]
+const FOX_SHEET = {
+  w: 1536, h: 1024,
+  win: { tender: [30, 5, 478, 501], calm: [547, 6, 489, 500], bright: [1056, 3, 463, 501],
+         thinking: [20, 514, 494, 492], heavy: [539, 520, 488, 486], intense: [1059, 515, 468, 490] }
+};
+
+// Mood log: { "2026-11-17": [{ mood: "serene", at: ISO }, ...] }  (last entry of the day = that day's mood)
 const Mood = (function () {
-  const grid = document.getElementById("mood-grid");
-  const info = document.getElementById("mood-info");
+  const $ = id => document.getElementById(id);
+  const card = $("mood"), foxEl = $("mood-fox-img"), foxBtn = $("mood-fox"), famEl = $("mood-family");
+  const nameEl = $("mood-name"), textEl = $("mood-text"), countEl = $("mood-count");
+  const saveBtn = $("mood-save"), savedEl = $("mood-saved"), grid = $("mood-board-grid");
   const byId = Object.fromEntries(MOODS.map(m => [m.id, m]));
-  const buttons = {};
+  const CYCLE = FAMILIES.flatMap(f => f.moods.map(id => ({ id, family: f })));
 
-  function currentId() {
-    const log = Storage.get("moodLog", {});
-    const today = log[todayKey()] || [];
-    return today.length ? today[today.length - 1].mood : null;
+  // The family's kimono fox, cut from fox-moods.png (the art is never recoloured)
+  function paintFox(el, familyId) {
+    const [x, y, w, h] = FOX_SHEET.win[familyId];
+    el.style.aspectRatio = w + " / " + h;
+    el.style.backgroundSize = (FOX_SHEET.w / w * 100) + "% auto";
+    el.style.backgroundPosition = (x / (FOX_SHEET.w - w) * 100) + "% " + (y / (FOX_SHEET.h - h) * 100) + "%";
+  }
+  // A small family mask from mood-board.png, used on the mood board
+  function paintMask(el, familyId) {
+    const [x0, y0] = MASK_SHEET.win[familyId], c = MASK_SHEET.cell;
+    el.style.backgroundImage = 'url("mood-board.png")';
+    el.style.backgroundSize = (MASK_SHEET.w / c * 100) + "% " + (MASK_SHEET.h / c * 100) + "%";
+    el.style.backgroundPosition = (x0 / (MASK_SHEET.w - c) * 100) + "% " + (y0 / (MASK_SHEET.h - c) * 100) + "%";
   }
 
-  function showInfo(id) {
-    info.replaceChildren();
-    if (!id) { info.textContent = "How are you feeling? Pick the face that fits."; return; }
-    const strong = document.createElement("strong");
-    strong.textContent = byId[id].name;
-    info.append(strong, byId[id].text);
+  const getLog = () => Storage.get("moodLog", {});
+  function keyFor(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   }
+  function savedOn(key) {
+    const day = getLog()[key] || [];
+    return day.length ? day[day.length - 1].mood : null;
+  }
+  const savedToday = () => savedOn(todayKey());
+
+  let idx = Math.max(0, CYCLE.findIndex(c => c.id === savedToday()));
 
   function render() {
-    const sel = currentId();
-    MOODS.forEach(m => buttons[m.id].setAttribute("aria-pressed", String(m.id === sel)));
-    showInfo(sel);
+    const c = CYCLE[idx], m = byId[c.id], saved = savedToday();
+    paintFox(foxEl, c.family.id);
+    card.dataset.family = c.family.id;
+    famEl.textContent = c.family.name;
+    nameEl.textContent = m.name;
+    textEl.textContent = m.text;
+    countEl.textContent = (idx + 1) + " / " + CYCLE.length;
+    foxBtn.setAttribute("aria-label", "Next mood (now " + m.name + ")");
+    saveBtn.disabled = saved === c.id;
+    saveBtn.textContent = saved === c.id ? "Saved" : "Save mood";
+    savedEl.textContent = saved
+      ? "Today: " + byId[saved].name + " \u2665" + (saved !== c.id ? " (save to update)" : "")
+      : "Tap the fox until one fits, then save it.";
   }
 
-  function choose(id) {
-    if (id === currentId()) return;
-    const log = Storage.get("moodLog", {});
-    (log[todayKey()] = log[todayKey()] || []).push({ mood: id, at: new Date().toISOString() });
+  // Mood board: the last 8 days, one small mask face per saved day
+  function renderBoard() {
+    const now = new Date();
+    const cells = [];
+    for (let i = 7; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      const id = savedOn(keyFor(d));
+      const li = document.createElement("li");
+      li.className = "board-cell" + (i === 0 ? " today" : "");
+      const icon = document.createElement("span");
+      icon.className = "board-icon" + (id ? "" : " empty");
+      const label = i === 0 ? "Today" : d.toLocaleDateString(undefined, { weekday: "short" });
+      if (id) { paintMask(icon, CYCLE.find(c => c.id === id).family.id); li.title = label + ": " + byId[id].name; }
+      const day = document.createElement("span");
+      day.className = "board-day";
+      day.textContent = label;
+      li.append(icon, day);
+      cells.push(li);
+    }
+    grid.replaceChildren(...cells);
+  }
+
+  function step(dir) {
+    idx = (idx + dir + CYCLE.length) % CYCLE.length;
+    render();
+    foxEl.classList.remove("pop");
+    void foxEl.offsetWidth;
+    foxEl.classList.add("pop");
+  }
+
+  function save() {
+    const log = getLog();
+    (log[todayKey()] = log[todayKey()] || []).push({ mood: CYCLE[idx].id, at: new Date().toISOString() });
     Storage.set("moodLog", log);
     render();
+    renderBoard();
     Kitsu.sayStatus("moodSelected");
   }
 
-  MOODS.forEach((m, i) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "mood-btn";
-    b.title = m.name;
-    b.setAttribute("aria-label", m.name + ": " + m.text);
-    b.setAttribute("aria-pressed", "false");
-    // Show this mood's face from the single sprite sheet (image.png)
-    const face = document.createElement("span");
-    face.className = "mood-sprite";
-    const row = Math.floor(i / 6), col = i % 6;
-    const x0 = SHEET.x[row][col], y0 = SHEET.bottom[row] - SHEET.cell;
-    face.style.backgroundSize = (SHEET.w / SHEET.cell * 100) + "% " + (SHEET.h / SHEET.cell * 100) + "%";
-    face.style.backgroundPosition = (x0 / (SHEET.w - SHEET.cell) * 100) + "% " + (y0 / (SHEET.h - SHEET.cell) * 100) + "%";
-    b.appendChild(face);
-    b.addEventListener("click", () => choose(m.id));
-    // Preview the description on hover/focus, then return to the chosen mood
-    ["mouseenter", "focus"].forEach(ev => b.addEventListener(ev, () => showInfo(m.id)));
-    ["mouseleave", "blur"].forEach(ev => b.addEventListener(ev, () => showInfo(currentId())));
-    buttons[m.id] = b;
-    grid.appendChild(b);
-  });
+  foxBtn.addEventListener("click", () => step(1));
+  $("mood-next").addEventListener("click", () => step(1));
+  $("mood-prev").addEventListener("click", () => step(-1));
+  saveBtn.addEventListener("click", save);
+  // New day (or coming back to the tab): today's mood starts unsaved again
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { render(); renderBoard(); } });
+
   render();
-  return { currentId };
+  renderBoard();
+  return { currentId: savedToday };
 })();
 
 // Digital clock: always the visitor's own timezone (never hardcoded)
