@@ -547,7 +547,6 @@ a { color: inherit; }
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
-.mood-sprite { display: block; width: 100%; height: 100%; background-image: url("image.png"); background-repeat: no-repeat; }
 .mood-btn:hover { border-color: var(--charcoal); }
 .mood-btn[aria-pressed="true"] { background: rgba(223, 161, 165, 0.45); border-color: var(--burgundy); box-shadow: 2px 2px 0 var(--burgundy); }
 .mood-info { margin: var(--gap-text) 0 0; font-size: 13px; min-height: 40px; }
@@ -792,3 +791,60 @@ a { color: inherit; }
   border-radius: var(--radius-sm);
 }
 .focus-input:disabled { opacity: 0.5; }
+
+/* 17. MOOD CARD: pixel status box + mood board ------------- */
+.mood-status {
+  --fam: #DFA1A5; --fam-ink: var(--charcoal); --fam-soft: rgba(223, 161, 165, 0.25);
+  padding: 0 var(--space-3) var(--space-3);
+  text-align: center;
+  background: var(--fam-soft);
+  border: 2px solid var(--fam);
+  border-radius: var(--radius);
+  box-shadow: 3px 3px 0 var(--fam);
+  overflow: hidden;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.mood-status[data-family="tender"]   { --fam: #DFA1A5; --fam-ink: var(--charcoal); --fam-soft: rgba(223, 161, 165, 0.25); }
+.mood-status[data-family="calm"]     { --fam: #657653; --fam-ink: var(--ivory);    --fam-soft: rgba(101, 118, 83, 0.18); }
+.mood-status[data-family="bright"]   { --fam: #C6A15B; --fam-ink: var(--charcoal); --fam-soft: rgba(198, 161, 91, 0.22); }
+.mood-status[data-family="thinking"] { --fam: #642D3B; --fam-ink: var(--ivory);    --fam-soft: rgba(100, 45, 59, 0.12); }
+.mood-status[data-family="heavy"]    { --fam: #292727; --fam-ink: var(--ivory);    --fam-soft: rgba(41, 39, 39, 0.10); }
+.mood-status[data-family="intense"]  { --fam: #C74736; --fam-ink: var(--ivory);    --fam-soft: rgba(199, 71, 54, 0.14); }
+
+.mood-bar {
+  margin: 0 calc(-1 * var(--space-3)) var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  background: var(--fam);
+  color: var(--fam-ink);
+}
+.mood-fox { display: block; width: 100%; padding: 0; background: transparent; border: 0; cursor: pointer; }
+.mood-fox-img { display: block; width: 100%; background-image: url("fox-moods.png"); background-repeat: no-repeat; }
+.mood-fox-img.pop { animation: mood-pop 0.25s ease-out; }
+@keyframes mood-pop { 0% { transform: translateY(4px) scale(0.97); } 100% { transform: none; } }
+.mood-name { margin: var(--space-2) 0 var(--space-1); font-family: var(--font-pixel); font-size: 18px; }
+.mood-text { margin: 0 0 var(--space-2); min-height: 40px; font-size: 13px; }
+.mood-nav { display: flex; align-items: center; justify-content: center; gap: var(--space-3); margin-bottom: var(--space-2); }
+.mood-arrow { background: var(--ivory); }
+.mood-count { font-family: var(--font-mono); font-size: 12px; }
+.mood-save { width: 100%; padding: var(--space-2) var(--space-3); }
+.mood-saved { margin: var(--space-2) 0 0; min-height: 18px; font-size: 12px; }
+
+.mood-board { margin-top: var(--space-3); }
+.mood-board-title { margin: 0 0 var(--space-2); font-family: var(--font-pixel); font-size: 14px; font-weight: 400; color: var(--burgundy); }
+.mood-board-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); }
+.board-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.board-icon { width: 100%; max-width: 40px; aspect-ratio: 1; }
+.board-icon.empty { border: 1px dashed rgba(41, 39, 39, 0.4); border-radius: var(--radius-sm); }
+.board-day { font-family: var(--font-mono); font-size: 10px; }
+.board-cell.today .board-day { font-weight: 700; color: var(--vermilion); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mood-fox-img.pop { animation: none; }
+  .mood-status { transition: none; }
+}
+
+.mood-family { margin: var(--space-1) 0 0; font-family: var(--font-pixel); font-size: 12px; color: var(--fam); }
+.mood-status[data-family="heavy"] .mood-family { color: var(--charcoal); }
+.board-icon { background-repeat: no-repeat; }
