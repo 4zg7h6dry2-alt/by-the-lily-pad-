@@ -206,6 +206,9 @@ const Kitsu = (function () {
 
 // Change these to adjust the timer (minutes)
 const DURATIONS = { focus: 25, short: 5, long: 15 };
+// The student can set their own focus length (saved between visits)
+const savedFocus = Storage.get("focusMinutes", 25);
+if (Number.isInteger(savedFocus) && savedFocus >= 1 && savedFocus <= 180) DURATIONS.focus = savedFocus;
 
 // Local-date key like "2026-11-17" (uses the visitor's own timezone)
 function todayKey() {
@@ -233,6 +236,7 @@ const Timer = (function () {
   const modeBtns  = document.querySelectorAll(".mode-btn");
   const barEl     = document.getElementById("progress-bar");
   const countEl   = document.getElementById("progress-count");
+  const focusInput = document.getElementById("focus-minutes");
   const BASE_TITLE = document.title;
 
   const state = { mode: "focus", total: DURATIONS.focus * 60, remaining: DURATIONS.focus * 60,
@@ -247,6 +251,7 @@ const Timer = (function () {
       b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode));
       b.disabled = state.running;
     });
+    focusInput.disabled = state.running || (state.mode === "focus" && state.remaining < state.total);
     document.title = state.running ? fmt(state.remaining) + " · " + BASE_TITLE : BASE_TITLE;
   }
 
@@ -335,6 +340,18 @@ const Timer = (function () {
     if (state.mode === "focus" && wasStarted) document.dispatchEvent(new CustomEvent("kitsune:sessionInterrupted")); // Step 5
     setMode(state.mode);
   }
+
+  // Custom focus length (1 to 180 minutes)
+  focusInput.value = DURATIONS.focus;
+  focusInput.addEventListener("change", () => {
+    let v = Math.round(Number(focusInput.value));
+    if (!Number.isFinite(v) || v < 1) v = DURATIONS.focus;
+    v = Math.min(v, 180);
+    focusInput.value = v;
+    DURATIONS.focus = v;
+    Storage.set("focusMinutes", v);
+    if (state.mode === "focus" && !state.running && state.remaining === state.total) setMode("focus");
+  });
 
   startBtn.addEventListener("click", toggle);
   resetBtn.addEventListener("click", reset);
@@ -1135,4 +1152,133 @@ const Shrine = (function () {
   document.addEventListener("click", e => { if (!panel.hidden && !root.contains(e.target)) close(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) close(); });
   return { render };
+})();
+
+// ---- Step 11: Credits, welcome note, About Me and Contact Me (one small modal) ----
+const CONTACT_EMAIL = "missnee04@gmail.com";
+
+// Block types: h = heading, p = paragraph, quote = italic line, small = small print,
+// asset = placeholder for an image you'll supply, mail = email button + copy button
+const INFO = {
+  credits: { title: "Credits & Acknowledgements", blocks: [
+    { t: "p", text: "Most of the artwork and visual resources in The Kitsuné Nook were created with the assistance of AI." },
+    { t: "p", text: "I take no credit for the original AI-generated assets or third-party resources. My contribution lies in the concept, colour palettes, creative direction and coding that brought this little nook to life." },
+    { t: "quote", text: "A little vision, a little AI, and a lot of tinkering!" },
+    { t: "small", text: "Still tinkering tho! Haha ;)" }
+  ]},
+  welcome: { title: "A little note to visitors", blocks: [
+    { t: "h", text: "Welcome to The Kitsuné Nook!" },
+    { t: "p", text: "A little corner for curious minds, quiet moments and small accomplishments. Wander around, explore what's here and make yourself at home." },
+    { t: "p", text: "And don't forget to say hello to Kitsu!" },
+    { t: "asset", label: "Kitsu" }   // ASSET PLACEHOLDER: Kelly's Kitsu image goes here later
+  ]},
+  about: { title: "About Me", blocks: [
+    { t: "h", text: "The Person Behind the Nook" },
+    { t: "p", text: "Hello, I'm Nee!" },
+    { t: "p", text: "I'm a student, graphic designer and curious soul with a fondness for art, storytelling, folklore and all things a little whimsical." },
+    { t: "p", text: "I enjoy bringing ideas to life, experimenting with colours and creating little things that make everyday life more interesting." },
+    { t: "p", text: "The Kitsuné Nook is one of those creations: a personal project where my love for design, learning and a little Japanese-inspired magic could meet." },
+    { t: "p", text: "I'm still learning, still creating and occasionally fighting with my code. But that's part of the fun." }
+  ]},
+  contact: { title: "Contact Me", blocks: [
+    { t: "h", text: "Send a letter to the Nook" },
+    { t: "p", text: "Want to say hello, share an idea or tell me what you think? I'd love to hear from you." },
+    { t: "mail" },
+    { t: "small", text: "The button opens your email app. If nothing happens, copy the address and write from any email you like." }
+  ]}
+};
+
+const Info = (function () {
+  const modal = document.getElementById("info-modal");
+  const titleEl = document.getElementById("info-title");
+  const body = document.getElementById("info-body");
+  const closeBtn = document.getElementById("info-x");
+  let current = null, opener = null;
+
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); return true; } catch { /* try the fallback */ }
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      ta.remove();
+      return ok;
+    } catch { return false; }
+  }
+
+  function mailBlock() {
+    const wrap = document.createElement("div");
+    wrap.className = "info-actions";
+    const a = document.createElement("a");
+    a.className = "btn";
+    a.href = "mailto:" + CONTACT_EMAIL + "?subject=" + encodeURIComponent("A Letter for the Nook");
+    a.textContent = "Send a letter";
+    const copy = document.createElement("button");
+    copy.type = "button";
+    copy.className = "btn btn-quiet";
+    copy.textContent = "Copy email address";
+    const msg = document.createElement("p");
+    msg.className = "info-small";
+    msg.setAttribute("role", "status");
+    msg.textContent = CONTACT_EMAIL;
+    copy.addEventListener("click", async () => {
+      msg.textContent = (await copyText(CONTACT_EMAIL)) ? "Copied! " + CONTACT_EMAIL : "Couldn't copy. Please copy it by hand: " + CONTACT_EMAIL;
+    });
+    wrap.append(a, copy);
+    const frag = document.createDocumentFragment();
+    frag.append(wrap, msg);
+    return frag;
+  }
+
+  function build(block) {
+    if (block.t === "mail") return mailBlock();
+    if (block.t === "asset") {
+      const d = document.createElement("div");
+      d.className = "info-asset placeholder-box";
+      d.setAttribute("aria-hidden", "true");
+      d.textContent = block.label;
+      return d;
+    }
+    const el = document.createElement(block.t === "h" ? "h3" : "p");
+    el.className = { h: "info-h", quote: "info-quote", small: "info-small" }[block.t] || "";
+    el.textContent = block.text;
+    return el;
+  }
+
+  function open(key, from) {
+    const data = INFO[key];
+    if (!data) return;
+    current = key;
+    opener = from || null;
+    titleEl.textContent = data.title;
+    body.replaceChildren(...data.blocks.map(build));
+    modal.hidden = false;
+    closeBtn.focus();
+  }
+
+  function close() {
+    modal.hidden = true;
+    if (current === "welcome") Storage.set("welcomeSeen", true);
+    current = null;
+    if (opener) opener.focus();
+  }
+
+  closeBtn.addEventListener("click", close);
+  modal.addEventListener("click", e => { if (e.target === modal) close(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !modal.hidden) close(); });
+
+  // Footer links
+  document.querySelectorAll("[data-info]").forEach(b => b.addEventListener("click", () => open(b.dataset.info, b)));
+  // Nav links: About Me and Contact Me open their windows
+  [["#about", "about"], ["#contact", "contact"]].forEach(([href, key]) => {
+    document.querySelectorAll('a[href="' + href + '"]').forEach(a => a.addEventListener("click", e => { e.preventDefault(); open(key, a); }));
+  });
+
+  // First visit: a gentle welcome
+  if (!Storage.get("welcomeSeen", false)) open("welcome", null);
+
+  return { open, close };
 })();
