@@ -21,19 +21,20 @@
         <h1 class="brand-name">The Kitsuné Nook</h1>
       </div>
       <nav class="nav" aria-label="Main">
-        <a class="nav-link" href="#home">Home</a>
-        <a class="nav-link" href="#diary">Diary</a>
-        <a class="nav-link" href="#about">About Me</a>
-        <a class="nav-link" href="#contact">Contact Me</a>
+        <a class="nav-link" href="#home"><img class="nav-icon" src="nav-home.png" alt="" width="24" height="24">Home</a>
+        <a class="nav-link" href="#diary"><img class="nav-icon" src="nav-diary.png" alt="" width="24" height="24">Diary</a>
+        <a class="nav-link" href="#about"><img class="nav-icon" src="nav-about.png" alt="" width="24" height="24">About Me</a>
+        <a class="nav-link" href="#contact"><img class="nav-icon" src="nav-contact.png" alt="" width="24" height="24">Contact Me</a>
         <button class="nav-link nav-note" id="note-open" type="button" aria-haspopup="dialog">
-          Read me <span class="heart" aria-hidden="true">&#9829;</span>
+          <img class="nav-icon" src="nav-readme.png" alt="" width="24" height="24">Read me <span class="heart" aria-hidden="true">&#9829;</span>
         </button>
       </nav>
       <!-- SHRINE OF SOURCES: searchable list of genuine research sites -->
       <div class="shrine" id="shrine">
         <form class="shrine-form" id="shrine-form" role="search">
           <label class="visually-hidden" for="shrine-input">Search the Shrine of Sources</label>
-          <input class="shrine-input" id="shrine-input" type="search" placeholder="Search the Shrine of Sources..." autocomplete="off">
+          <input class="shrine-input" id="shrine-input" type="search" placeholder="Search sources..." autocomplete="off">
+          <button class="shrine-go" type="submit" aria-label="Search the Shrine of Sources"></button>
         </form>
         <div class="shrine-panel" id="shrine-panel" hidden>
           <div class="shrine-head">
@@ -237,7 +238,7 @@
         <p class="modal-line">A little note about your things:</p>
         <ul class="modal-list">
           <li>Your diary, notes and bookshelf are saved in this browser, on this device.</li>
-          <li>They won't follow you to other devices or browsers.Kitsu thought you should know sweetie;)</li>
+          <li>They won't follow you to other devices or browsers.Kitsu thought you should know sweetie ;)</li>
           <li>Clearing your browser data will clear them too.</li>
         </ul>
         <p class="modal-line">Tip: keep using the same browser and your nook will always be here.</p>
