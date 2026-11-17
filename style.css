@@ -762,3 +762,33 @@ a { color: inherit; }
   .shrine-input { width: 100%; }
   .shrine-panel { left: 0; right: 0; width: auto; }
 }
+
+/* 15. FOOTER + INFO MODAL (credits, welcome, about, contact) */
+.footer { display: flex; justify-content: center; align-items: center; gap: var(--space-2); flex-wrap: wrap; padding: var(--space-4) var(--space-4) var(--space-6); font-size: 13px; }
+.link-btn { padding: 0; font: inherit; color: var(--burgundy); background: none; border: 0; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.link-btn:hover { color: var(--vermilion); }
+
+.info-box { max-width: 480px; max-height: 85vh; display: flex; flex-direction: column; }
+.info-body { overflow-y: auto; padding: var(--pad-lg); font-family: var(--font-ui); font-size: 15px; }
+.info-body > * { margin: 0 0 var(--gap-text); }
+.info-body > *:last-child { margin-bottom: 0; }
+.info-h { font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--burgundy); }
+.info-quote { font-family: var(--font-heading); font-style: italic; color: var(--burgundy); }
+.info-small { font-size: 13px; opacity: 0.85; }
+.info-actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.info-actions .btn { text-decoration: none; display: inline-block; }
+.info-asset { width: 64px; height: 64px; }
+
+/* 16. CUSTOM FOCUS LENGTH ---------------------------------- */
+.focus-length { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); font-size: 14px; }
+.focus-input {
+  width: 72px;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--charcoal);
+  background: #fff9ec;
+  border: var(--border);
+  border-radius: var(--radius-sm);
+}
+.focus-input:disabled { opacity: 0.5; }
