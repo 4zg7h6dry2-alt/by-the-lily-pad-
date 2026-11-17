@@ -47,10 +47,25 @@
 
     <!-- LEFT SIDEBAR (mood card, later) -->
     <aside class="sidebar sidebar-left" id="left">
-      <section class="card mood" id="mood">
-        <h2 class="card-title">Today's Mood</h2>
-        <div class="mood-grid" id="mood-grid" role="group" aria-label="Choose how you feel"></div>
-        <p class="mood-info" id="mood-info" aria-live="polite"></p>
+      <section class="card mood-status" id="mood" data-family="tender">
+        <p class="mood-bar">Today's Mood</p>
+        <button class="mood-fox" id="mood-fox" type="button" aria-label="Next mood">
+          <span class="mood-fox-img" id="mood-fox-img" aria-hidden="true"></span>
+        </button>
+        <p class="mood-family" id="mood-family"></p>
+        <p class="mood-name" id="mood-name"></p>
+        <p class="mood-text" id="mood-text"></p>
+        <div class="mood-nav">
+          <button class="btn btn-small mood-arrow" id="mood-prev" type="button" aria-label="Previous mood">&#9664;</button>
+          <span class="mood-count" id="mood-count"></span>
+          <button class="btn btn-small mood-arrow" id="mood-next" type="button" aria-label="Next mood">&#9654;</button>
+        </div>
+        <button class="btn mood-save" id="mood-save" type="button">Save mood</button>
+        <p class="mood-saved" id="mood-saved" role="status"></p>
+        <div class="mood-board">
+          <h3 class="mood-board-title">Mood board</h3>
+          <ul class="mood-board-grid" id="mood-board-grid"></ul>
+        </div>
       </section>
     </aside>
 
@@ -220,8 +235,8 @@
       <div class="modal-body">
         <p class="modal-line">A little note about your things:</p>
         <ul class="modal-list">
-          <li>Hi foxy! Your diary, notes and bookshelf are saved in this browser, on this device.</li>
-          <li>They won't follow you to other devices or browsers. You must be so overwhelmed with work sweetie. Kitsu thought you should know</li>
+          <li>Your diary, notes and bookshelf are saved in this browser, on this device.</li>
+          <li>They won't follow you to other devices or browsers.You must be so busy and overwhelmed sweetie! kitsu wanted to let you know;)</li>
           <li>Clearing your browser data will clear them too.</li>
         </ul>
         <p class="modal-line">Tip: keep using the same browser and your nook will always be here.</p>
