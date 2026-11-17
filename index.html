@@ -33,9 +33,10 @@
 
     <!-- LEFT SIDEBAR (mood card, later) -->
     <aside class="sidebar sidebar-left" id="left">
-      <section class="card">
+      <section class="card mood" id="mood">
         <h2 class="card-title">Today's Mood</h2>
-        <p class="card-note">Coming soon</p>
+        <div class="mood-grid" id="mood-grid" role="group" aria-label="Choose how you feel"></div>
+        <p class="mood-info" id="mood-info" aria-live="polite"></p>
       </section>
     </aside>
 
@@ -133,13 +134,16 @@
 
     <!-- RIGHT SIDEBAR (clock + quote, later) -->
     <aside class="sidebar sidebar-right" id="right">
-      <section class="card">
-        <h2 class="card-title">Clock</h2>
-        <p class="clock-placeholder">00:00:00</p>
+      <section class="card clock">
+        <h2 class="card-title">Local Time</h2>
+        <p class="clock-time" id="clock-time">--:--:--</p>
+        <p class="clock-date" id="clock-date"></p>
+        <p class="clock-zone" id="clock-zone"></p>
       </section>
-      <section class="card">
-        <h2 class="card-title">Quote</h2>
-        <p class="card-note">Coming soon</p>
+      <section class="card quote">
+        <h2 class="card-title">A Little Thought</h2>
+        <blockquote class="quote-text" id="quote-text"></blockquote>
+        <button class="btn btn-quiet btn-small" id="quote-next" type="button">Another one</button>
       </section>
     </aside>
 
