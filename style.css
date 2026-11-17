@@ -536,3 +536,32 @@ a { color: inherit; }
   .window-body { grid-template-columns: 1fr; }
   .diary-list-pane { border-right: 0; border-bottom: var(--border); max-height: 220px; }
 }
+
+/* 11. SIDEBAR: MOOD, CLOCK, QUOTE -------------------------- */
+.mood-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: var(--space-1); }
+.mood-btn {
+  aspect-ratio: 1;
+  padding: var(--space-1);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.mood-sprite { display: block; width: 100%; height: 100%; background-image: url("image.png"); background-repeat: no-repeat; }
+.mood-btn:hover { border-color: var(--charcoal); }
+.mood-btn[aria-pressed="true"] { background: rgba(223, 161, 165, 0.45); border-color: var(--burgundy); box-shadow: 2px 2px 0 var(--burgundy); }
+.mood-info { margin: var(--gap-text) 0 0; font-size: 13px; min-height: 40px; }
+.mood-info strong { display: block; font-family: var(--font-heading); font-size: 15px; color: var(--burgundy); }
+
+.clock-time { margin: 0; font-family: var(--font-mono); font-weight: 700; font-size: 26px; line-height: 1.2; }
+.clock-date { margin: var(--space-1) 0 0; font-family: var(--font-mono); font-size: 12px; }
+.clock-zone { margin: var(--space-1) 0 0; font-family: var(--font-mono); font-size: 11px; opacity: 0.7; }
+
+.quote-text {
+  margin: 0 0 var(--gap-text);
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--gold);
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 15px;
+}
