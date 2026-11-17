@@ -767,3 +767,372 @@ const QUOTES = [
   document.getElementById("quote-next").addEventListener("click", () => { i = (i + 1) % QUOTES.length; show(); });
   show();
 })();
+
+// ---- Step 8: A Letter to Tomorrow ----
+// Letters: [{ id, writtenOn: "YYYY-MM-DD", text, createdAt, openedAt: ISO | null }]
+const Letters = (function () {
+  const $ = id => document.getElementById(id);
+  const banner = $("letter-banner"), bannerText = $("letter-banner-text");
+  const readBox = $("letter-read"), readDate = $("letter-read-date"), readText = $("letter-read-text");
+  const form = $("letter-form"), input = $("letter-input"), sealBtn = $("letter-seal"), statusEl = $("letter-status");
+  const historyBox = $("letter-history"), historyList = $("letter-history-list");
+
+  let dirty = false;
+
+  const all = () => Storage.get("letters", []);
+  const save = list => Storage.set("letters", list);
+  const todays = () => all().find(l => l.writtenOn === todayKey());
+
+  // Letters from earlier days that haven't been opened yet
+  const pending = () => all()
+    .filter(l => l.writtenOn < todayKey() && !l.openedAt)
+    .sort((a, b) => a.writtenOn.localeCompare(b.writtenOn));
+
+  function fmtDate(key) {
+    const [y, m, d] = key.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  }
+
+  function renderBanner() {
+    const n = pending().length;
+    banner.hidden = n === 0;
+    bannerText.textContent = "Hello, future fox! You have a message from past you." + (n > 1 ? " (" + n + " waiting)" : "");
+  }
+
+  function renderHistory() {
+    const opened = all().filter(l => l.openedAt && l.writtenOn < todayKey())
+      .sort((a, b) => b.writtenOn.localeCompare(a.writtenOn));
+    historyBox.hidden = opened.length === 0;
+    historyList.replaceChildren();
+    opened.forEach(l => {
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "diary-item";
+      const d = document.createElement("span");
+      d.className = "diary-item-date";
+      d.textContent = fmtDate(l.writtenOn);
+      const t = document.createElement("span");
+      t.className = "diary-item-title";
+      t.textContent = l.text.slice(0, 40);
+      btn.append(d, t);
+      btn.addEventListener("click", () => showLetter(l));
+      li.appendChild(btn);
+      historyList.appendChild(li);
+    });
+  }
+
+  function showLetter(l) {
+    readDate.textContent = "From you, on " + fmtDate(l.writtenOn);
+    readText.textContent = l.text;
+    readBox.hidden = false;
+  }
+
+  // Open the oldest waiting letter and keep it in history
+  function openNext() {
+    const next = pending()[0];
+    if (!next) return;
+    const list = all();
+    list.find(l => l.id === next.id).openedAt = new Date().toISOString();
+    save(list);
+    showLetter(next);
+    renderBanner();
+    renderHistory();
+  }
+
+  function sealToday(quiet) {
+    const text = input.value.trim();
+    if (!text) { if (!quiet) statusEl.textContent = "Write a few words first."; return false; }
+    const list = all();
+    const existing = list.find(l => l.writtenOn === todayKey());
+    if (existing) existing.text = text;
+    else list.push({ id: Date.now().toString(36), writtenOn: todayKey(), text, createdAt: new Date().toISOString(), openedAt: null });
+    save(list);
+    dirty = false;
+    sealBtn.textContent = "Update letter";
+    if (!quiet) {
+      statusEl.textContent = "Sealed. It will be waiting for you tomorrow.";
+      Kitsu.show("Sealed and tucked away. I'll deliver it tomorrow.");
+    }
+    return true;
+  }
+
+  form.addEventListener("submit", e => { e.preventDefault(); sealToday(false); });
+  input.addEventListener("input", () => { dirty = true; statusEl.textContent = "Not sealed yet"; });
+  $("letter-open").addEventListener("click", openNext);
+  $("letter-read-close").addEventListener("click", () => { readBox.hidden = true; });
+  window.addEventListener("pagehide", () => { if (dirty) sealToday(true); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden && dirty) sealToday(true); });
+
+  // Today's letter (if already written) is shown so it can be edited until the day ends
+  const t = todays();
+  if (t) { input.value = t.text; sealBtn.textContent = "Update letter"; }
+
+  renderBanner();
+  renderHistory();
+  if (pending().length) Kitsu.sayStatus("letterReceived");
+
+  // A new day arrives while the page stays open
+  let lastDay = todayKey();
+  setInterval(() => {
+    if (todayKey() !== lastDay) {
+      lastDay = todayKey();
+      input.value = ""; sealBtn.textContent = "Seal letter"; statusEl.textContent = "";
+      renderBanner(); renderHistory();
+      if (pending().length) Kitsu.sayStatus("letterReceived");
+    }
+  }, 60000);
+
+  return { pending };
+})();
+
+// ---- Step 9: The Forgotten Bookshelf ----
+// Books: [{ id, name, addedOn: "YYYY-MM-DD", lastVisited: "YYYY-MM-DD" }]
+// Dust depends on real days since lastVisited (not on how often the page is opened).
+const DUST_DAYS = { little: 3, quite: 7, forgotten: 14 };   // change these to tune the dust
+const DUST_LABELS = ["Nice and tidy", "A little dust", "Quite dusty", "Forgotten"];
+
+const Shelf = (function () {
+  const $ = id => document.getElementById(id);
+  const grid = $("shelf-grid"), emptyMsg = $("shelf-empty"), form = $("shelf-form"), input = $("shelf-input");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const all = () => Storage.get("bookshelf", []);
+  const save = list => Storage.set("bookshelf", list);
+
+  function daysSince(key) {
+    const [y, m, d] = key.split("-").map(Number);
+    const now = new Date();
+    const then = new Date(y, m - 1, d);
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.max(0, Math.round((today - then) / 86400000));
+  }
+  function levelFor(days) {
+    if (days >= DUST_DAYS.forgotten) return 3;
+    if (days >= DUST_DAYS.quite) return 2;
+    if (days >= DUST_DAYS.little) return 1;
+    return 0;
+  }
+  const dayWord = n => n === 0 ? "today" : n === 1 ? "1 day" : n + " days";
+
+  $("shelf-legend").textContent =
+    DUST_LABELS[1] + ": " + DUST_DAYS.little + "+ days | " +
+    DUST_LABELS[2] + ": " + DUST_DAYS.quite + "+ | " +
+    DUST_LABELS[3] + ": " + DUST_DAYS.forgotten + "+";
+
+  function render() {
+    const list = all()
+      .map((b, i) => ({ b, i, days: daysSince(b.lastVisited) }))
+      .sort((x, y) => y.days - x.days || x.i - y.i);      // dustiest books first
+    emptyMsg.hidden = list.length > 0;
+    grid.replaceChildren();
+    list.forEach(({ b, i, days }) => {
+      const level = levelFor(days);
+      const li = document.createElement("li");
+      li.className = "shelf-item dust-" + level;
+
+      const book = document.createElement("div");
+      book.className = "book book--c" + (i % 4);
+      const title = document.createElement("span");
+      title.className = "book-title";
+      title.textContent = b.name;
+      const dust = document.createElement("span");
+      dust.className = "book-dust";
+      dust.setAttribute("aria-hidden", "true");
+      book.append(title, dust);
+
+      const meta = document.createElement("p");
+      meta.className = "book-meta";
+      const lv = document.createElement("span");
+      lv.className = "book-level";
+      lv.textContent = DUST_LABELS[level];
+      const dd = document.createElement("span");
+      dd.className = "book-days";
+      dd.textContent = dayWord(days);
+      meta.append(lv, dd);
+
+      const actions = document.createElement("div");
+      actions.className = "book-actions";
+      const dustBtn = document.createElement("button");
+      dustBtn.type = "button";
+      dustBtn.className = "btn btn-small";
+      dustBtn.textContent = days === 0 ? "Dusted today" : "Dust off";
+      dustBtn.disabled = days === 0;
+      dustBtn.addEventListener("click", () => dustOff(b.id, book, dustBtn));
+
+      const rmBtn = document.createElement("button");
+      rmBtn.type = "button";
+      rmBtn.className = "btn btn-quiet btn-small";
+      rmBtn.textContent = "Remove";
+      let armed = null;
+      rmBtn.addEventListener("click", () => {            // two taps to remove, so no accidents
+        if (armed) { clearTimeout(armed); remove(b.id); return; }
+        rmBtn.textContent = "Sure?";
+        armed = setTimeout(() => { armed = null; rmBtn.textContent = "Remove"; }, 3000);
+      });
+
+      actions.append(dustBtn, rmBtn);
+      li.append(book, meta, actions);
+      grid.appendChild(li);
+    });
+  }
+
+  function dustOff(id, bookEl, btn) {
+    btn.disabled = true;
+    bookEl.classList.add("dusting");
+    const finish = () => {
+      const list = all();
+      const b = list.find(x => x.id === id);
+      if (b) { b.lastVisited = todayKey(); save(list); }
+      render();
+      Kitsu.show("Spotless! A little revision never hurt anyone.");
+    };
+    reduceMotion ? finish() : setTimeout(finish, 650);
+  }
+
+  function remove(id) {
+    save(all().filter(b => b.id !== id));
+    render();
+  }
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const name = input.value.trim();
+    if (!name) { input.focus(); return; }
+    const list = all();
+    list.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name, addedOn: todayKey(), lastVisited: todayKey() });
+    save(list);
+    input.value = "";
+    render();
+    Kitsu.show("A new book on the shelf. How exciting.");
+  });
+
+  // Dust keeps growing in real time: refresh when you come back to the tab and every hour
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
+  setInterval(render, 3600000);
+
+  render();
+  return { render };
+})();
+
+// ---- Step 10: Shrine of Sources (searchable list of genuine research sites) ----
+// access: "Free" = free to use. "Free with limits" = free to start, but some content/features may be restricted.
+const SHRINE_SOURCES = [
+  { cat: "Papers & journals", name: "Google Scholar", url: "https://scholar.google.com", access: "Free with limits",
+    text: "Search scholarly articles, theses and books. Use \"Cited by\" to follow a source's trail. Some full texts sit behind paywalls.", tags: "articles research citations" },
+  { cat: "Papers & journals", name: "DOAJ", url: "https://doaj.org", access: "Free",
+    text: "Directory of Open Access Journals: peer-reviewed journals you can read in full.", tags: "peer reviewed open access" },
+  { cat: "Papers & journals", name: "CORE", url: "https://core.ac.uk", access: "Free",
+    text: "A huge collection of open access research papers from repositories around the world.", tags: "open access articles" },
+  { cat: "Papers & journals", name: "Semantic Scholar", url: "https://www.semanticscholar.org", access: "Free",
+    text: "Paper search with short summaries and citation details.", tags: "articles summaries" },
+  { cat: "Papers & journals", name: "African Journals Online", url: "https://www.ajol.info", access: "Free with limits",
+    text: "Peer-reviewed journals published in Africa. Many articles are open; some may need access.", tags: "africa nigeria kenya journals" },
+  { cat: "Papers & journals", name: "SSRN", url: "https://www.ssrn.com", access: "Free with limits",
+    text: "Early-stage papers in the social sciences and humanities. Some downloads may need a free account.", tags: "preprints social science policy" },
+  { cat: "Papers & journals", name: "BASE", url: "https://www.base-search.net", access: "Free",
+    text: "A search engine for academic open access documents.", tags: "search open access" },
+  { cat: "Papers & journals", name: "Unpaywall", url: "https://unpaywall.org", access: "Free",
+    text: "Finds legal free copies of paywalled papers.", tags: "paywall free articles" },
+  { cat: "Papers & journals", name: "Internet Archive Scholar", url: "https://scholar.archive.org", access: "Free",
+    text: "A searchable archive of scholarly papers preserved online.", tags: "articles archive" },
+
+  { cat: "Books & learning", name: "OpenStax", url: "https://openstax.org", access: "Free",
+    text: "Free, peer-reviewed textbooks.", tags: "textbooks study guides" },
+  { cat: "Books & learning", name: "Directory of Open Access Books", url: "https://www.doabooks.org", access: "Free",
+    text: "Academic books you can read for free.", tags: "books open access" },
+  { cat: "Books & learning", name: "Open Library", url: "https://openlibrary.org", access: "Free with limits",
+    text: "Borrow digital books free with an account. Availability varies by title.", tags: "books borrow library" },
+  { cat: "Books & learning", name: "Project Gutenberg", url: "https://www.gutenberg.org", access: "Free",
+    text: "Public-domain classics and older books.", tags: "books classics" },
+  { cat: "Books & learning", name: "MIT OpenCourseWare", url: "https://ocw.mit.edu", access: "Free",
+    text: "Free lecture notes, readings and course materials from MIT.", tags: "courses study guides lectures" },
+  { cat: "Books & learning", name: "Khan Academy", url: "https://www.khanacademy.org", access: "Free",
+    text: "Free lessons and practice on many subjects.", tags: "lessons study learning" },
+
+  { cat: "Data & facts", name: "World Bank Open Data", url: "https://data.worldbank.org", access: "Free",
+    text: "Country-level development statistics.", tags: "statistics economics countries" },
+  { cat: "Data & facts", name: "UN Data", url: "https://data.un.org", access: "Free",
+    text: "Statistics from across the United Nations system.", tags: "statistics countries" },
+  { cat: "Data & facts", name: "Our World in Data", url: "https://ourworldindata.org", access: "Free",
+    text: "Charts and explainers with their data sources shown.", tags: "statistics charts" },
+  { cat: "Data & facts", name: "Wikipedia", url: "https://www.wikipedia.org", access: "Free",
+    text: "Handy for background reading. Don't cite it directly; follow the sources it lists instead.", tags: "background reference encyclopedia" },
+
+  { cat: "Citations & writing", name: "Purdue OWL", url: "https://owl.purdue.edu", access: "Free",
+    text: "Clear guides to APA, MLA and Chicago, plus writing help.", tags: "apa referencing citations writing" },
+  { cat: "Citations & writing", name: "Zotero", url: "https://www.zotero.org", access: "Free with limits",
+    text: "A reference manager that builds citations for you. Extra cloud storage costs extra.", tags: "references citations bibliography apa" },
+  { cat: "Citations & writing", name: "Crossref DOI Search", url: "https://search.crossref.org", access: "Free",
+    text: "Look up a source's DOI so you can cite it properly.", tags: "doi citations references" },
+  { cat: "Citations & writing", name: "Wayback Machine", url: "https://web.archive.org", access: "Free",
+    text: "See saved versions of web pages. Useful when a link dies.", tags: "archive links citations" }
+];
+
+const Shrine = (function () {
+  const $ = id => document.getElementById(id);
+  const root = $("shrine"), input = $("shrine-input"), panel = $("shrine-panel");
+  const listEl = $("shrine-list"), countEl = $("shrine-count");
+  let wasEmpty = false;
+
+  function matches(src, q) {
+    const hay = (src.name + " " + src.cat + " " + src.text + " " + src.tags + " " + src.access).toLowerCase();
+    return q.toLowerCase().split(/\s+/).filter(Boolean).every(w => hay.includes(w));
+  }
+
+  function render() {
+    const found = SHRINE_SOURCES.filter(s => matches(s, input.value));
+    listEl.replaceChildren();
+    countEl.textContent = found.length === 1 ? "1 source" : found.length + " sources";
+    if (!found.length) {
+      const p = document.createElement("p");
+      p.className = "shrine-empty";
+      p.textContent = KITSU_LINES.status.searchEmpty + " Try another word, like \"citations\" or \"journals\".";
+      listEl.appendChild(p);
+      if (!wasEmpty) Kitsu.sayStatus("searchEmpty");
+      wasEmpty = true;
+      return;
+    }
+    wasEmpty = false;
+    let lastCat = "";
+    found.forEach(s => {
+      if (s.cat !== lastCat) {
+        const h = document.createElement("h3");
+        h.className = "shrine-cat";
+        h.textContent = s.cat;
+        listEl.appendChild(h);
+        lastCat = s.cat;
+      }
+      const item = document.createElement("div");
+      item.className = "shrine-item";
+      const top = document.createElement("div");
+      top.className = "shrine-top";
+      const a = document.createElement("a");
+      a.className = "shrine-link";
+      a.href = s.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = s.name;
+      const tag = document.createElement("span");
+      tag.className = "shrine-tag " + (s.access === "Free" ? "free" : "limits");
+      tag.textContent = s.access;
+      top.append(a, tag);
+      const p = document.createElement("p");
+      p.className = "shrine-text";
+      p.textContent = s.text;
+      item.append(top, p);
+      listEl.appendChild(item);
+    });
+  }
+
+  function open() { render(); panel.hidden = false; }
+  function close() { panel.hidden = true; }
+
+  input.addEventListener("focus", open);
+  input.addEventListener("input", () => { if (panel.hidden) panel.hidden = false; render(); });
+  $("shrine-form").addEventListener("submit", e => { e.preventDefault(); open(); });
+  $("shrine-close").addEventListener("click", () => { close(); input.blur(); });
+  document.addEventListener("click", e => { if (!panel.hidden && !root.contains(e.target)) close(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) close(); });
+  return { render };
+})();
