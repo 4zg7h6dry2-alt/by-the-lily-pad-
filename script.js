@@ -635,3 +635,135 @@ const Diary = (function () {
   load(null);
   return { open: openWin };
 })();
+
+// ---- Step 7: Sidebar (mood, clock, quote) ----
+
+// Moods use Kelly's sprite sheet: image.png (1536 x 1024), saved in the same folder as index.html.
+// Order of the faces matches the MOODS list below (3 rows of 6).
+const SHEET = {
+  w: 1536, h: 1024, cell: 243,
+  x: [[29, 283, 532, 786, 1043, 1299], [20, 280, 535, 786, 1049, 1304], [24, 285, 535, 787, 1043, 1302]],
+  bottom: [297, 619, 933]
+};
+const MOODS = [
+  { id: "melancholic",   name: "Melancholic",   text: "A soft, quiet sadness with a little beauty in it." },
+  { id: "nostalgic",     name: "Nostalgic",     text: "Warm longing for a time or place that has passed." },
+  { id: "whimsical",     name: "Whimsical",     text: "Playful and dreamy, in the mood for small delights." },
+  { id: "contemplative", name: "Contemplative", text: "Turning big thoughts over slowly and calmly." },
+  { id: "restless",      name: "Restless",      text: "Unsettled and itching for something to change." },
+  { id: "serene",        name: "Serene",        text: "Peaceful and clear, like still water." },
+  { id: "sentimental",   name: "Sentimental",   text: "Tender-hearted, holding memories close." },
+  { id: "bewildered",    name: "Bewildered",    text: "Puzzled and a little lost for words." },
+  { id: "hopeful",       name: "Hopeful",       text: "Quietly expecting something good ahead." },
+  { id: "enamoured",     name: "Enamoured",     text: "Charmed and completely taken with something." },
+  { id: "disenchanted",  name: "Disenchanted",  text: "The sparkle has faded, and you're unimpressed." },
+  { id: "pensive",       name: "Pensive",       text: "Lost in thought, thinking something through." },
+  { id: "tranquil",      name: "Tranquil",      text: "Calm all the way through, with nothing pressing." },
+  { id: "overstimulated",name: "Overstimulated",text: "Too much at once, and your mind needs space." },
+  { id: "yearning",      name: "Yearning",      text: "A gentle ache for something just out of reach." },
+  { id: "content",       name: "Content",       text: "Quietly satisfied. Nothing more is needed right now." },
+  { id: "curious",       name: "Curious",       text: "Eager to poke at something and find out more." },
+  { id: "uninspired",    name: "Uninspired",    text: "Ideas are hiding and motivation is on a tea break." }
+];
+
+// Mood log: { "2026-11-17": [{ mood: "serene", at: ISO }, ...] }  (last one = current mood)
+const Mood = (function () {
+  const grid = document.getElementById("mood-grid");
+  const info = document.getElementById("mood-info");
+  const byId = Object.fromEntries(MOODS.map(m => [m.id, m]));
+  const buttons = {};
+
+  function currentId() {
+    const log = Storage.get("moodLog", {});
+    const today = log[todayKey()] || [];
+    return today.length ? today[today.length - 1].mood : null;
+  }
+
+  function showInfo(id) {
+    info.replaceChildren();
+    if (!id) { info.textContent = "How are you feeling? Pick the face that fits."; return; }
+    const strong = document.createElement("strong");
+    strong.textContent = byId[id].name;
+    info.append(strong, byId[id].text);
+  }
+
+  function render() {
+    const sel = currentId();
+    MOODS.forEach(m => buttons[m.id].setAttribute("aria-pressed", String(m.id === sel)));
+    showInfo(sel);
+  }
+
+  function choose(id) {
+    if (id === currentId()) return;
+    const log = Storage.get("moodLog", {});
+    (log[todayKey()] = log[todayKey()] || []).push({ mood: id, at: new Date().toISOString() });
+    Storage.set("moodLog", log);
+    render();
+    Kitsu.sayStatus("moodSelected");
+  }
+
+  MOODS.forEach((m, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "mood-btn";
+    b.title = m.name;
+    b.setAttribute("aria-label", m.name + ": " + m.text);
+    b.setAttribute("aria-pressed", "false");
+    // Show this mood's face from the single sprite sheet (image.png)
+    const face = document.createElement("span");
+    face.className = "mood-sprite";
+    const row = Math.floor(i / 6), col = i % 6;
+    const x0 = SHEET.x[row][col], y0 = SHEET.bottom[row] - SHEET.cell;
+    face.style.backgroundSize = (SHEET.w / SHEET.cell * 100) + "% " + (SHEET.h / SHEET.cell * 100) + "%";
+    face.style.backgroundPosition = (x0 / (SHEET.w - SHEET.cell) * 100) + "% " + (y0 / (SHEET.h - SHEET.cell) * 100) + "%";
+    b.appendChild(face);
+    b.addEventListener("click", () => choose(m.id));
+    // Preview the description on hover/focus, then return to the chosen mood
+    ["mouseenter", "focus"].forEach(ev => b.addEventListener(ev, () => showInfo(m.id)));
+    ["mouseleave", "blur"].forEach(ev => b.addEventListener(ev, () => showInfo(currentId())));
+    buttons[m.id] = b;
+    grid.appendChild(b);
+  });
+  render();
+  return { currentId };
+})();
+
+// Digital clock: always the visitor's own timezone (never hardcoded)
+(function initClock() {
+  const timeEl = document.getElementById("clock-time");
+  const dateEl = document.getElementById("clock-date");
+  const zoneEl = document.getElementById("clock-zone");
+  zoneEl.textContent = (Intl.DateTimeFormat().resolvedOptions().timeZone || "").replace(/_/g, " ");
+  function tick() {
+    const now = new Date();
+    timeEl.textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    dateEl.textContent = now.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+// Quote card: one gentle quote a day, with a button for another
+const QUOTES = [
+  "Small steps still leave footprints.",
+  "You don't have to finish today. You only have to begin.",
+  "Rest is part of the work, not a break from it.",
+  "A quiet day of study is still a day of growth.",
+  "Understanding arrives slowly, then all at once.",
+  "Be patient with the version of you that is still learning.",
+  "Curiosity is a kinder teacher than pressure.",
+  "Tomorrow's you will be glad of today's little effort.",
+  "Not every day needs to be your best. Some just need you to show up.",
+  "Let the questions stay a while. Answers come when they're ready.",
+  "Progress can look like tea, a page, and a deep breath.",
+  "What you revisit, you remember."
+];
+(function initQuote() {
+  const el = document.getElementById("quote-text");
+  const start = new Date();
+  const dayNumber = Math.floor(new Date(start.getFullYear(), start.getMonth(), start.getDate()) / 86400000);
+  let i = dayNumber % QUOTES.length;
+  const show = () => { el.textContent = "\u201C" + QUOTES[i] + "\u201D"; };
+  document.getElementById("quote-next").addEventListener("click", () => { i = (i + 1) % QUOTES.length; show(); });
+  show();
+})();
