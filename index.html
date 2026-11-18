@@ -85,7 +85,10 @@
       <!-- KITSU DIALOGUE BOX -->
       <section class="kitsu" aria-label="Kitsu">
         <div class="kitsu-box">
-          <p class="kitsu-name">Kitsu <span class="kitsu-title">Tea House Attendant</span></p>
+          <div class="kitsu-head">
+            <p class="kitsu-name">Kitsu <span class="kitsu-title">Tea House Attendant</span></p>
+            <span class="kitsu-presence" id="kitsu-presence" data-state="online"><i class="presence-dot" aria-hidden="true"></i><span id="kitsu-presence-text">online</span></span>
+          </div>
           <p class="kitsu-text" id="kitsu-text" aria-live="polite"></p>
           <button class="kitsu-next" id="kitsu-next" type="button" aria-label="Hear something else from Kitsu">&#9660;</button>
         </div>
@@ -139,7 +142,10 @@
             </label>
           </div>
           <div class="progress timer-progress" aria-label="Today's study sessions">
-            <div class="progress-bar" id="progress-bar" role="img" aria-label="No sessions yet today"></div>
+            <div class="progress-row">
+              <span class="bar-icon" id="bar-icon"><svg class="px-heart" aria-hidden="true"><use href="#px-heart"/></svg></span>
+              <div class="progress-bar" id="progress-bar" role="img" aria-label="No sessions yet today"></div>
+            </div>
             <p class="progress-count" id="progress-count">No sessions yet. No rush.</p>
           </div>
         </div>
@@ -255,8 +261,12 @@
       <section class="card kmsg" id="kmsg" aria-label="A message from Kitsu">
         <button class="kmsg-x" id="kmsg-x" type="button" aria-label="Remove Kitsu's message for today">X</button>
         <div class="kmsg-row">
-          <img class="kmsg-kitsu" src="kitsu.png" alt="Kitsu" width="60" height="70">
-          <button class="kmsg-bubble" id="kmsg-bubble" type="button" aria-live="polite">A message from Kitsu</button>
+          <!-- Reading Kitsu: kitsu-reading.png (falls back to kitsu.png until you upload it) -->
+          <img class="kmsg-kitsu" src="kitsu-reading.png" onerror="this.onerror=null;this.src='kitsu.png'" alt="Kitsu" width="120" height="140">
+          <div class="kmsg-body">
+            <svg class="px-heart kmsg-heart" aria-hidden="true"><use href="#px-heart"/></svg>
+            <button class="kmsg-bubble" id="kmsg-bubble" type="button" aria-live="polite">A message from Kitsu</button>
+          </div>
         </div>
         <button class="btn btn-quiet btn-small kmsg-next" id="kmsg-next" type="button" hidden>Another one</button>
       </section>
@@ -275,7 +285,7 @@
         <p class="modal-line">A little note about your things:</p>
         <ul class="modal-list">
           <li>Your diary, notes and bookshelf are saved in this browser, on this device.</li>
-          <li>They won't follow you to other devices or browsers.</li>
+          <li>They won't follow you to other devices or browsers.Kitsu thought you should know sweetie</li>
           <li>Clearing your browser data will clear them too.</li>
         </ul>
         <p class="modal-line">Tip: keep using the same browser and your nook will always be here.</p>
