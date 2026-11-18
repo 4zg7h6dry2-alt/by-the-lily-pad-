@@ -199,7 +199,23 @@ const Kitsu = (function () {
   show(greetingLine());
   nextBtn.addEventListener("click", () => say("remarks"));
 
-  return { say, sayStatus, show };
+  // "Online" tag next to his name: changes while you study
+  const presenceEl = document.getElementById("kitsu-presence");
+  const presenceText = document.getElementById("kitsu-presence-text");
+  const PRESENCE = {
+    online:   "online",
+    studying: "studying with you",
+    tea:      "on a tea break",
+    paused:   "waiting for you",
+    done:     "proud of you"
+  };
+  function presence(key) {
+    const k = PRESENCE[key] ? key : "online";
+    presenceText.textContent = PRESENCE[k];
+    presenceEl.dataset.state = k;
+  }
+
+  return { say, sayStatus, show, presence };
 })();
 
 // ---- Step 4: Pomodoro + Little Accomplishment Bar ----
@@ -256,6 +272,8 @@ const Timer = (function () {
     });
     focusInput.disabled = state.running || (state.mode === "focus" && state.remaining < state.total);
     document.title = state.running ? fmt(state.remaining) + " · " + BASE_TITLE : BASE_TITLE;
+    Kitsu.presence(state.running ? (state.mode === "focus" ? "studying" : "tea")
+                  : (state.mode === "focus" && state.remaining < state.total ? "paused" : "online"));
   }
 
   // Little Accomplishment Bar: one pixel segment per completed focus session today
@@ -309,6 +327,7 @@ const Timer = (function () {
       Kitsu.say("complete");
       document.dispatchEvent(new CustomEvent("kitsune:sessionComplete")); // Step 5 listens here
       setMode(SessionLog.today() % 4 === 0 ? "long" : "short");
+      Kitsu.presence("done");
     } else {
       Kitsu.say("start");
       setMode("focus");
@@ -1310,7 +1329,7 @@ const INFO = {
   ]},
   contact: { title: "Contact Me", blocks: [
     { t: "h", text: "Send a letter to the Nook" },
-    { t: "p", text: "Hi sweetie! Want to say hello, share an idea or tell me what you think? I'd love to hear from you." },
+    { t: "p", text: "Want to say hello, share an idea or tell me what you think? I'd love to hear from you." },
     { t: "mail" },
     { t: "small", text: "The button opens your email app. If nothing happens, copy the address and write from any email you like." }
   ]}
@@ -1434,4 +1453,16 @@ const Info = (function () {
     const noteOpen = !document.getElementById("note-modal").hidden || !document.getElementById("info-modal").hidden;
     if (e.key === "Escape" && win.classList.contains("is-max") && !noteOpen) setMax(false);
   });
+})();
+
+// Optional: bar-icon.png replaces the little heart at the start of the Little Accomplishment Bar
+(function loadBarIcon() {
+  if (typeof Image === "undefined") return;
+  const img = new Image();
+  img.onload = () => {
+    img.alt = "";
+    img.className = "bar-icon-img";
+    document.getElementById("bar-icon").replaceChildren(img);
+  };
+  img.src = "bar-icon.png";   // if the file is missing, nothing happens
 })();
