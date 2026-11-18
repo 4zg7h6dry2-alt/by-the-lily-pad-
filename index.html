@@ -11,7 +11,13 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="px-heart" viewBox="0 0 9 8">
+      <path d="M1 0h2v1H1zM6 0h2v1H6zM0 1h4v1H0zM5 1h4v1H5zM0 2h9v2H0zM1 4h7v1H1zM2 5h5v1H2zM3 6h3v1H3zM4 7h1v1H4z"/>
+      <path d="M1 1h1v1H1z" fill="#F6EBD5" fill-opacity="0.55"/>
+    </symbol>
+  </svg>
+    <div class="app">
 
     <!-- TOP NAV (built in step 2) -->
     <header class="topbar" id="topbar">
@@ -21,20 +27,20 @@
         <h1 class="brand-name">The Kitsuné Nook</h1>
       </div>
       <nav class="nav" aria-label="Main">
-        <a class="nav-link" href="#home"><img class="nav-icon" src="nav-home.png" alt="" width="24" height="24">Home</a>
-        <a class="nav-link" href="#diary"><img class="nav-icon" src="nav-diary.png" alt="" width="24" height="24">Diary</a>
-        <a class="nav-link" href="#about"><img class="nav-icon" src="nav-about.png" alt="" width="24" height="24">About Me</a>
-        <a class="nav-link" href="#contact"><img class="nav-icon" src="nav-contact.png" alt="" width="24" height="24">Contact Me</a>
+        <a class="nav-link" href="#home"><svg class="px-heart heart-home" aria-hidden="true"><use href="#px-heart"/></svg>Home</a>
+        <a class="nav-link" href="#diary"><svg class="px-heart heart-diary" aria-hidden="true"><use href="#px-heart"/></svg>Diary</a>
+        <a class="nav-link" href="#about"><svg class="px-heart heart-about" aria-hidden="true"><use href="#px-heart"/></svg>About Me</a>
+        <a class="nav-link" href="#contact"><svg class="px-heart heart-contact" aria-hidden="true"><use href="#px-heart"/></svg>Contact Me</a>
         <button class="nav-link nav-note" id="note-open" type="button" aria-haspopup="dialog">
-          <img class="nav-icon" src="nav-readme.png" alt="" width="24" height="24">Read me <span class="heart" aria-hidden="true">&#9829;</span>
+          <svg class="px-heart heart-readme" aria-hidden="true"><use href="#px-heart"/></svg>Read me
         </button>
       </nav>
       <!-- SHRINE OF SOURCES: searchable list of genuine research sites -->
       <div class="shrine" id="shrine">
         <form class="shrine-form" id="shrine-form" role="search">
           <label class="visually-hidden" for="shrine-input">Search the Shrine of Sources</label>
-          <input class="shrine-input" id="shrine-input" type="search" placeholder="Search sources..." autocomplete="off">
-          <button class="shrine-go" type="submit" aria-label="Search the Shrine of Sources"></button>
+          <svg class="px-heart heart-search shrine-heart" aria-hidden="true"><use href="#px-heart"/></svg>
+          <input class="shrine-input" id="shrine-input" type="search" placeholder="Search the shrine..." autocomplete="off">
         </form>
         <div class="shrine-panel" id="shrine-panel" hidden>
           <div class="shrine-head">
@@ -238,7 +244,7 @@
         <p class="modal-line">A little note about your things:</p>
         <ul class="modal-list">
           <li>Your diary, notes and bookshelf are saved in this browser, on this device.</li>
-          <li>They won't follow you to other devices or browsers.Kitsu thought you should know sweetie ;)</li>
+          <li>They won't follow you to other devices or browsers.</li>
           <li>Clearing your browser data will clear them too.</li>
         </ul>
         <p class="modal-line">Tip: keep using the same browser and your nook will always be here.</p>
