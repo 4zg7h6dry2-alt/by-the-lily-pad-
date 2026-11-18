@@ -7,7 +7,7 @@
 :root {
   /* Palette */
   --vermilion: #C74736;
-  --ivory:     #86313C;
+  --ivory:     #F6EBD5;
   --sakura:    #DFA1A5;
   --burgundy:  #642D3B;
   --charcoal:  #292727;
@@ -889,3 +889,45 @@ a { color: inherit; }
   .shrine { position: relative; flex: none; }
   .shrine-panel { left: 0; right: auto; width: min(440px, calc(100vw - 48px)); }
 }
+
+/* 21. PIXEL HEARTS (nav + search), COMPACT MOOD CARD ---------- */
+.px-heart { flex: none; display: block; width: 18px; height: 16px; fill: currentColor; shape-rendering: crispEdges; filter: drop-shadow(0 0 1px rgba(246, 235, 213, 0.7)); }
+@media (min-width: 1024px) { .px-heart { width: 16px; height: 14px; } }
+.heart-home    { color: var(--vermilion); }
+.heart-diary   { color: var(--gold); }
+.heart-about   { color: var(--sakura); }
+.heart-contact { color: var(--ivory); }
+.heart-readme  { color: var(--moss); }
+.heart-search  { color: var(--burgundy); filter: none; }
+.nav-note.unread .px-heart { animation: heart-beat 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .nav-note.unread .px-heart { animation: none; } }
+
+/* Search box: back to a simple input, with a heart inside it */
+.shrine { width: auto; aspect-ratio: auto; background: none; flex: none; }
+.shrine-form { position: relative; inset: auto; }
+.shrine-input {
+  position: static;
+  width: 220px;
+  max-width: 100%;
+  height: auto;
+  padding: var(--space-1) var(--space-3) var(--space-1) 34px;
+  font-size: 14px;
+  background: #fff9ec;
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-sm);
+}
+.shrine-input:focus-visible { outline-offset: 2px; }
+.shrine-heart { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 12px; pointer-events: none; }
+@media (min-width: 1024px) { .shrine { width: auto; } }
+@media (max-width: 639px) {
+  .shrine { flex: 1 1 100%; }
+  .shrine-input { width: 100%; }
+  .shrine-panel { left: 0; right: 0; width: auto; }
+}
+
+/* Mood card: smaller fox, one-row mood board */
+.mood-fox { width: min(100%, 120px); margin: 0 auto; }
+.mood-text { min-height: 0; }
+.mood-board-grid { display: flex; gap: var(--space-2); overflow-x: auto; padding-bottom: var(--space-1); }
+.board-cell { flex: none; width: 40px; }
+.board-icon { width: 32px; height: 32px; max-width: none; }
