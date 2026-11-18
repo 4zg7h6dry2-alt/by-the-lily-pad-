@@ -17,7 +17,10 @@
       <path d="M1 1h1v1H1z" fill="#F6EBD5" fill-opacity="0.55"/>
     </symbol>
   </svg>
-    <div class="app">
+    <div class="scenery" aria-hidden="true"></div>
+  <!-- Optional art: kitsu-cushion.png (shows only if the file exists) -->
+  <img class="deco-cushion" src="kitsu-cushion.png" alt="" onerror="this.remove()">
+  <div class="app">
 
     <!-- TOP NAV (built in step 2) -->
     <header class="topbar" id="topbar">
@@ -81,8 +84,8 @@
     <main class="workspace" id="home">
       <!-- KITSU DIALOGUE BOX -->
       <section class="kitsu" aria-label="Kitsu">
-        <!-- SPRITE PLACEHOLDER: Kelly's Kitsu sprites go here (sleeping, reading, tea, annoyed, happy) -->
-        <div class="kitsu-portrait placeholder-box" id="kitsu-portrait" aria-hidden="true">Kitsu</div>
+        <!-- Kitsu sprite: kitsu.png, saved in the same folder as index.html -->
+        <img class="kitsu-portrait" id="kitsu-portrait" src="kitsu.png" alt="Kitsu" width="85" height="100">
         <div class="kitsu-box">
           <p class="kitsu-name">Kitsu <span class="kitsu-title">Tea House Attendant</span></p>
           <p class="kitsu-text" id="kitsu-text" aria-live="polite"></p>
@@ -104,28 +107,48 @@
         </form>
       </section>
 
-      <!-- POMODORO TIMER + LITTLE ACCOMPLISHMENT BAR -->
-      <section class="card timer-card" id="timer">
-        <h2 class="card-title">Study Timer</h2>
-        <div class="mode-tabs" role="group" aria-label="Timer mode">
-          <button class="mode-btn" type="button" data-mode="focus" aria-pressed="true">Focus</button>
-          <button class="mode-btn" type="button" data-mode="short" aria-pressed="false">Short break</button>
-          <button class="mode-btn" type="button" data-mode="long" aria-pressed="false">Long break</button>
+      <!-- POMODORO ROOM (timer window + Little Accomplishment Bar) -->
+      <section class="window timer-window" id="timer" aria-label="Pomodoro Room">
+        <div class="window-bar">
+          <h2 class="window-title-wrap">Pomodoro Room</h2>
+          <div class="window-controls">
+            <button class="win-btn win-min" id="tw-min" type="button" aria-label="Minimise Pomodoro Room">_</button>
+            <button class="win-btn win-max" id="tw-max" type="button" aria-label="Maximise Pomodoro Room">&#9633;</button>
+            <button class="win-btn win-close" id="tw-close" type="button" aria-label="Close Pomodoro Room">X</button>
+          </div>
         </div>
-        <label class="focus-length" for="focus-minutes">Focus length
-          <input class="focus-input" id="focus-minutes" type="number" min="1" max="180" step="1" inputmode="numeric"> minutes
-        </label>
-        <p class="timer-display" id="timer-display" role="timer" aria-live="off">25:00</p>
-        <div class="timer-actions">
-          <button class="btn" id="timer-start" type="button">Start</button>
-          <button class="btn btn-quiet" id="timer-reset" type="button">Reset</button>
-        </div>
-
-        <div class="progress" aria-label="Today's study sessions">
-          <div class="progress-bar" id="progress-bar" role="img" aria-label="No sessions yet today"></div>
-          <p class="progress-count" id="progress-count">No sessions yet. No rush.</p>
+        <div class="timer-body" id="timer-body">
+          <!-- Optional art: teacup.png (shows only if the file exists) -->
+          <img class="timer-art" src="teacup.png" alt="" onerror="this.remove()">
+          <div class="timer-main">
+            <p class="timer-display" id="timer-display" role="timer" aria-live="off">25:00</p>
+            <p class="timer-line">A little progress, one minute at a time. &#9829;</p>
+            <div class="timer-actions">
+              <button class="btn" id="timer-start" type="button">Start</button>
+              <button class="btn btn-reset" id="timer-reset" type="button">Reset</button>
+              <button class="btn btn-skip" id="timer-skip" type="button">Skip</button>
+            </div>
+          </div>
+          <div class="timer-side">
+            <p class="timer-side-title">Session Type</p>
+            <div class="mode-tabs" role="radiogroup" aria-label="Session type">
+              <button class="mode-btn" type="button" data-mode="focus" aria-pressed="true">Focus (25 min)</button>
+              <button class="mode-btn" type="button" data-mode="short" aria-pressed="false">Short break (5 min)</button>
+              <button class="mode-btn" type="button" data-mode="long" aria-pressed="false">Long break (15 min)</button>
+            </div>
+            <label class="focus-length" for="focus-minutes">Focus length
+              <input class="focus-input" id="focus-minutes" type="number" min="1" max="180" step="1" inputmode="numeric"> min
+            </label>
+          </div>
+          <div class="progress timer-progress" aria-label="Today's study sessions">
+            <div class="progress-bar" id="progress-bar" role="img" aria-label="No sessions yet today"></div>
+            <p class="progress-count" id="progress-count">No sessions yet. No rush.</p>
+          </div>
         </div>
       </section>
+      <div class="diary-closed" id="timer-closed" hidden>
+        <button class="btn" id="timer-reopen" type="button">Open Pomodoro Room</button>
+      </div>
     <!-- A LETTER TO TOMORROW -->
       <section class="card letter" id="letter">
         <h2 class="card-title">A Letter to Tomorrow</h2>
@@ -163,7 +186,7 @@
         <p class="shelf-legend" id="shelf-legend"></p>
         <form class="shelf-form" id="shelf-form">
           <label class="visually-hidden" for="shelf-input">Subject or topic</label>
-          <input class="shelf-input" id="shelf-input" type="text" maxlength="40" placeholder="e.g. PAD 402, Chapter 3" autocomplete="off">
+          <input class="shelf-input" id="shelf-input" type="text" maxlength="40" placeholder="e.g. Biology, Cell division" autocomplete="off">
           <button class="btn" type="submit">Add to shelf</button>
         </form>
         <ul class="shelf-grid" id="shelf-grid"></ul>
@@ -188,9 +211,14 @@
         <div class="window-body" id="diary-body">
           <div class="diary-list-pane">
             <button class="btn btn-small" id="diary-new" type="button">New entry</button>
-            <label class="diary-filter">Jump to date
-              <input type="date" id="diary-date-filter">
-            </label>
+            <div class="cal" id="diary-cal">
+              <div class="cal-head">
+                <button class="cal-nav" id="cal-prev" type="button" aria-label="Previous month">&#8249;</button>
+                <span class="cal-title" id="cal-title"></span>
+                <button class="cal-nav" id="cal-next" type="button" aria-label="Next month">&#8250;</button>
+              </div>
+              <div class="cal-grid" id="cal-grid"></div>
+            </div>
             <button class="btn btn-quiet btn-small" id="diary-clear-filter" type="button" hidden>Show all</button>
             <ul class="diary-list" id="diary-list"></ul>
           </div>
@@ -224,10 +252,13 @@
         <p class="clock-date" id="clock-date"></p>
         <p class="clock-zone" id="clock-zone"></p>
       </section>
-      <section class="card quote">
-        <h2 class="card-title">A Little Thought</h2>
-        <blockquote class="quote-text" id="quote-text"></blockquote>
-        <button class="btn btn-quiet btn-small" id="quote-next" type="button">Another one</button>
+      <section class="card kmsg" id="kmsg" aria-label="A message from Kitsu">
+        <button class="kmsg-x" id="kmsg-x" type="button" aria-label="Remove Kitsu's message for today">X</button>
+        <div class="kmsg-row">
+          <img class="kmsg-kitsu" src="kitsu.png" alt="Kitsu" width="60" height="70">
+          <button class="kmsg-bubble" id="kmsg-bubble" type="button" aria-live="polite">A message from Kitsu</button>
+        </div>
+        <button class="btn btn-quiet btn-small kmsg-next" id="kmsg-next" type="button" hidden>Another one</button>
       </section>
     </aside>
 
