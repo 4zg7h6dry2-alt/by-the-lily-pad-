@@ -477,7 +477,7 @@ const Diary = (function () {
   const win = $("diary"), closedBar = $("diary-closed");
   const titleBtn = $("diary-title"), titleInput = $("diary-title-input");
   const titleEl = $("diary-entry-title"), textEl = $("diary-text");
-  const listEl = $("diary-list"), metaEl = $("diary-meta"), statusEl = $("diary-status");
+  const listEl = $("diary-list"), dateEl = $("diary-entry-date"), statusEl = $("diary-status");
   const saveBtn = $("diary-save"), deleteBtn = $("diary-delete"), confirmBox = $("diary-confirm");
   const calGrid = $("cal-grid"), calTitle = $("cal-title"), clearFilterBtn = $("diary-clear-filter");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -501,9 +501,8 @@ const Diary = (function () {
   function setStatus(msg) { statusEl.textContent = msg; }
 
   function renderMeta() {
-    if (!current.id) { metaEl.textContent = "New entry \u00B7 " + fmtDate(current.date); return; }
-    const edited = current.updatedAt && current.updatedAt !== current.createdAt;
-    metaEl.textContent = fmtDate(current.date) + (edited ? " \u00B7 edited " + fmtTime(current.updatedAt) : "");
+    dateEl.max = todayKey();
+    dateEl.value = current.date;
   }
 
   // Month calendar: dots mark days with entries, tap a day to see its entries
@@ -585,7 +584,7 @@ const Diary = (function () {
   function save(quiet) {
     if (!hasContent()) { if (!quiet) setStatus("Write a little something first."); return false; }
     const now = new Date().toISOString();
-    const fields = { title: titleEl.value.trim(), text: textEl.value.replace(/\s+$/, "") };
+    const fields = { title: titleEl.value.trim(), text: textEl.value.replace(/\s+$/, ""), date: (dateEl.value && dateEl.value <= todayKey()) ? dateEl.value : current.date };
     if (current.id) {
       const i = entries.findIndex(e => e.id === current.id);
       entries[i] = { ...entries[i], ...fields, updatedAt: now };
@@ -628,6 +627,10 @@ const Diary = (function () {
   $("diary-new").addEventListener("click", () => { switchTo(null); textEl.focus(); Kitsu.sayStatus("diaryNew"); });
   saveBtn.addEventListener("click", () => save(false));
   titleEl.addEventListener("input", markDirty);
+  dateEl.addEventListener("change", () => {            // pick a different day for this entry
+    if (dateEl.value && dateEl.value <= todayKey()) { current.date = dateEl.value; markDirty(); }
+    else renderMeta();
+  });
   textEl.addEventListener("input", markDirty);
   clearFilterBtn.addEventListener("click", () => { filter = ""; clearFilterBtn.hidden = true; renderList(); });
   $("cal-prev").addEventListener("click", () => { viewM--; if (viewM < 0) { viewM = 11; viewY--; } renderCalendar(); });
@@ -743,8 +746,8 @@ const FAMILIES = [
 // Where each fox sits in fox-moods.png (1536 x 1024): [x, y, width, height]
 const FOX_SHEET = {
   w: 1536, h: 1024,
-  win: { tender: [30, 5, 478, 501], calm: [547, 6, 489, 500], bright: [1056, 3, 463, 501],
-         thinking: [20, 514, 494, 492], heavy: [539, 520, 488, 486], intense: [1059, 515, 468, 490] }
+  win: { tender: [18, 3, 498, 505], calm: [537, 4, 501, 504], bright: [1054, 1, 475, 504],
+         thinking: [18, 512, 498, 495], heavy: [537, 518, 501, 489], intense: [1054, 513, 475, 493] }
 };
 
 // Mood log: { "2026-11-17": [{ mood: "serene", at: ISO }, ...] }  (last entry of the day = that day's mood)
@@ -899,6 +902,12 @@ const AFFIRMATIONS = [
 
   bubble.addEventListener("click", () => { if (opened) next(); else { opened = true; render(); } });
   nextBtn.addEventListener("click", next);
+  document.getElementById("kmsg-restore").addEventListener("click", () => {
+    Storage.set("kmsgHidden", "");
+    opened = false;
+    render();
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
   document.getElementById("kmsg-x").addEventListener("click", () => { Storage.set("kmsgHidden", todayKey()); render(); });
   document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });   // returns the next day
   render();
@@ -1301,7 +1310,7 @@ const INFO = {
   ]},
   contact: { title: "Contact Me", blocks: [
     { t: "h", text: "Send a letter to the Nook" },
-    { t: "p", text: "Want to say hello, share an idea or tell me what you think? I'd love to hear from you." },
+    { t: "p", text: "Hi sweetie! Want to say hello, share an idea or tell me what you think? I'd love to hear from you." },
     { t: "mail" },
     { t: "small", text: "The button opens your email app. If nothing happens, copy the address and write from any email you like." }
   ]}
@@ -1355,11 +1364,11 @@ const Info = (function () {
   function build(block) {
     if (block.t === "mail") return mailBlock();
     if (block.t === "asset") {
-      const d = document.createElement("div");
-      d.className = "info-asset placeholder-box";
-      d.setAttribute("aria-hidden", "true");
-      d.textContent = block.label;
-      return d;
+      const img = document.createElement("img");
+      img.className = "info-kitsu";
+      img.src = "kitsu.png";
+      img.alt = block.label;
+      return img;
     }
     const el = document.createElement(block.t === "h" ? "h3" : "p");
     el.className = { h: "info-h", quote: "info-quote", small: "info-small" }[block.t] || "";
