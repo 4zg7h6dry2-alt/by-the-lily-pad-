@@ -1181,3 +1181,66 @@ body { overflow-x: clip; }
 @media (max-width: 639px) {
   .window-body { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* 27. DIARY ON PHONES (calendar was spilling over the page) --- */
+@media (max-width: 639px) {
+  .diary-list-pane { max-height: none; }
+  .cal-day { aspect-ratio: auto; height: 34px; }
+  .diary-list { max-height: 160px; }
+}
+
+/* 28. KITSU "ONLINE" TAG -------------------------------------- */
+.kitsu-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; }
+.kitsu-head .kitsu-name { margin: 0 0 var(--space-1); }
+.kitsu-presence {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+  margin-bottom: var(--space-1);
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: var(--ivory);
+  background: rgba(246, 235, 213, 0.12);
+  border: 1px solid rgba(246, 235, 213, 0.35);
+  border-radius: 999px;
+}
+.presence-dot { width: 7px; height: 7px; border-radius: 50%; background: #8DB07A; box-shadow: 0 0 4px #8DB07A; }
+.kitsu-presence[data-state="studying"] .presence-dot { background: var(--gold); box-shadow: 0 0 5px var(--gold); animation: presence-pulse 1.6s ease-in-out infinite; }
+.kitsu-presence[data-state="tea"] .presence-dot { background: var(--sakura); box-shadow: 0 0 4px var(--sakura); }
+.kitsu-presence[data-state="paused"] .presence-dot { background: var(--vermilion); box-shadow: 0 0 4px var(--vermilion); }
+.kitsu-presence[data-state="done"] .presence-dot { background: var(--sakura); box-shadow: 0 0 6px var(--sakura); }
+@keyframes presence-pulse { 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .kitsu-presence[data-state="studying"] .presence-dot { animation: none; } }
+
+/* 29. MESSAGE FROM KITSU: big Kitsu, pink heart, plain message  */
+.kmsg-row { flex-direction: column; align-items: center; text-align: center; gap: var(--space-2); }
+.kmsg-kitsu { width: 120px; }
+.kmsg-body { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); min-width: 0; }
+.kmsg-heart { width: 14px; height: 13px; color: var(--sakura); filter: none; }
+.kmsg-bubble {
+  min-height: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 16px;
+  text-align: inherit;
+  color: var(--burgundy);
+}
+.kmsg-bubble::before { content: none; }
+.kmsg-bubble:not(.is-open)::after { font-family: var(--font-pixel); font-style: normal; }
+@media (max-width: 1023px) {
+  .kmsg-row { flex-direction: row; align-items: center; text-align: left; }
+  .kmsg-body { align-items: flex-start; flex: 1; }
+}
+
+/* 30. LITTLE ACCOMPLISHMENT BAR ICON -------------------------- */
+.progress-row { display: flex; align-items: center; gap: var(--space-2); }
+.progress-row .progress-bar { flex: 1; }
+.bar-icon { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; }
+.bar-icon .px-heart { color: var(--sakura); width: 16px; height: 14px; filter: none; }
+.bar-icon-img { display: block; max-width: 28px; max-height: 28px; width: auto; height: auto; }
