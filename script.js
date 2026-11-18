@@ -771,6 +771,7 @@ const Mood = (function () {
       cells.push(li);
     }
     grid.replaceChildren(...cells);
+    grid.scrollLeft = grid.scrollWidth;   // show today at the end of the row
   }
 
   function step(dir) {
