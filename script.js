@@ -237,6 +237,8 @@ const Timer = (function () {
   const barEl     = document.getElementById("progress-bar");
   const countEl   = document.getElementById("progress-count");
   const focusInput = document.getElementById("focus-minutes");
+  const skipBtn = document.getElementById("timer-skip");
+  const MODE_LABEL = { focus: "Focus", short: "Short break", long: "Long break" };
   const BASE_TITLE = document.title;
 
   const state = { mode: "focus", total: DURATIONS.focus * 60, remaining: DURATIONS.focus * 60,
@@ -248,6 +250,7 @@ const Timer = (function () {
     displayEl.textContent = fmt(state.remaining);
     startBtn.textContent = state.running ? "Pause" : (state.remaining < state.total ? "Resume" : "Start");
     modeBtns.forEach(b => {
+      b.textContent = MODE_LABEL[b.dataset.mode] + " (" + DURATIONS[b.dataset.mode] + " min)";
       b.setAttribute("aria-pressed", String(b.dataset.mode === state.mode));
       b.disabled = state.running;
     });
@@ -352,6 +355,19 @@ const Timer = (function () {
     Storage.set("focusMinutes", v);
     if (state.mode === "focus" && !state.running && state.remaining === state.total) setMode("focus");
   });
+
+  // Skip: jump to the next phase (a skipped focus session is not counted)
+  function skip() {
+    const wasStarted = state.remaining < state.total;
+    stopTicking();
+    if (state.mode === "focus") {
+      if (wasStarted) document.dispatchEvent(new CustomEvent("kitsune:sessionInterrupted"));
+      setMode(SessionLog.today() > 0 && SessionLog.today() % 4 === 0 ? "long" : "short");
+    } else {
+      setMode("focus");
+    }
+  }
+  skipBtn.addEventListener("click", skip);
 
   startBtn.addEventListener("click", toggle);
   resetBtn.addEventListener("click", reset);
@@ -463,7 +479,7 @@ const Diary = (function () {
   const titleEl = $("diary-entry-title"), textEl = $("diary-text");
   const listEl = $("diary-list"), metaEl = $("diary-meta"), statusEl = $("diary-status");
   const saveBtn = $("diary-save"), deleteBtn = $("diary-delete"), confirmBox = $("diary-confirm");
-  const filterEl = $("diary-date-filter"), clearFilterBtn = $("diary-clear-filter");
+  const calGrid = $("cal-grid"), calTitle = $("cal-title"), clearFilterBtn = $("diary-clear-filter");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let entries = Storage.get("diaryEntries", []);
@@ -490,7 +506,38 @@ const Diary = (function () {
     metaEl.textContent = fmtDate(current.date) + (edited ? " \u00B7 edited " + fmtTime(current.updatedAt) : "");
   }
 
+  // Month calendar: dots mark days with entries, tap a day to see its entries
+  const calNow = new Date();
+  let viewY = calNow.getFullYear(), viewM = calNow.getMonth();
+  function renderCalendar() {
+    calTitle.textContent = new Date(viewY, viewM, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+    const first = new Date(viewY, viewM, 1).getDay();
+    const days = new Date(viewY, viewM + 1, 0).getDate();
+    const withEntries = new Set(entries.map(e => e.date));
+    const cells = [];
+    ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].forEach(w => {
+      const h = document.createElement("span");
+      h.className = "cal-dow";
+      h.textContent = w;
+      cells.push(h);
+    });
+    for (let i = 0; i < first; i++) cells.push(document.createElement("span"));
+    for (let d = 1; d <= days; d++) {
+      const key = viewY + "-" + String(viewM + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "cal-day" + (withEntries.has(key) ? " has-entry" : "") + (key === todayKey() ? " is-today" : "") + (key === filter ? " is-selected" : "");
+      b.textContent = d;
+      b.setAttribute("aria-label", fmtDate(key) + (withEntries.has(key) ? ", has entries" : ""));
+      b.setAttribute("aria-pressed", String(key === filter));
+      b.addEventListener("click", () => { filter = key === filter ? "" : key; clearFilterBtn.hidden = !filter; renderList(); });
+      cells.push(b);
+    }
+    calGrid.replaceChildren(...cells);
+  }
+
   function renderList() {
+    renderCalendar();
     listEl.replaceChildren();
     const shown = entries
       .filter(e => !filter || e.date === filter)
@@ -582,8 +629,9 @@ const Diary = (function () {
   saveBtn.addEventListener("click", () => save(false));
   titleEl.addEventListener("input", markDirty);
   textEl.addEventListener("input", markDirty);
-  filterEl.addEventListener("change", () => { filter = filterEl.value; clearFilterBtn.hidden = !filter; renderList(); });
-  clearFilterBtn.addEventListener("click", () => { filter = ""; filterEl.value = ""; clearFilterBtn.hidden = true; renderList(); });
+  clearFilterBtn.addEventListener("click", () => { filter = ""; clearFilterBtn.hidden = true; renderList(); });
+  $("cal-prev").addEventListener("click", () => { viewM--; if (viewM < 0) { viewM = 11; viewY--; } renderCalendar(); });
+  $("cal-next").addEventListener("click", () => { viewM++; if (viewM > 11) { viewM = 0; viewY++; } renderCalendar(); });
   window.addEventListener("pagehide", () => { if (dirty) save(true); });
   document.addEventListener("visibilitychange", () => { if (document.hidden && dirty) save(true); });
 
@@ -818,29 +866,42 @@ const Mood = (function () {
   setInterval(tick, 1000);
 })();
 
-// Quote card: one gentle quote a day, with a button for another
-const QUOTES = [
+// Message from Kitsu: tap the bubble for an affirmation, "Another one" to rotate, X to remove it for today
+const AFFIRMATIONS = [
+  "You showed up. That is already half the work.",
   "Small steps still leave footprints.",
-  "You don't have to finish today. You only have to begin.",
-  "Rest is part of the work, not a break from it.",
-  "A quiet day of study is still a day of growth.",
-  "Understanding arrives slowly, then all at once.",
-  "Be patient with the version of you that is still learning.",
-  "Curiosity is a kinder teacher than pressure.",
-  "Tomorrow's you will be glad of today's little effort.",
-  "Not every day needs to be your best. Some just need you to show up.",
-  "Let the questions stay a while. Answers come when they're ready.",
-  "Progress can look like tea, a page, and a deep breath.",
-  "What you revisit, you remember."
+  "Even foxes nap between adventures. Rest counts.",
+  "You are allowed to learn slowly. I'll keep the tea warm.",
+  "Today's little effort will thank you tomorrow.",
+  "Not every day needs to be your best. Some just need you.",
+  "Confusion is only understanding on its way.",
+  "I believe in you. I'm also terribly good at belief.",
+  "One page. One thought. One breath. Begin there.",
+  "Your pace is a perfectly good pace.",
+  "What you revisit, you remember. Visit often.",
+  "Proud of you? Obviously. Carry on."
 ];
-(function initQuote() {
-  const el = document.getElementById("quote-text");
-  const start = new Date();
-  const dayNumber = Math.floor(new Date(start.getFullYear(), start.getMonth(), start.getDate()) / 86400000);
-  let i = dayNumber % QUOTES.length;
-  const show = () => { el.textContent = "\u201C" + QUOTES[i] + "\u201D"; };
-  document.getElementById("quote-next").addEventListener("click", () => { i = (i + 1) % QUOTES.length; show(); });
-  show();
+(function initKitsuMessage() {
+  const card = document.getElementById("kmsg"), bubble = document.getElementById("kmsg-bubble");
+  const nextBtn = document.getElementById("kmsg-next");
+  const now = new Date();
+  let i = Math.floor(new Date(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000) % AFFIRMATIONS.length;
+  let opened = false;
+
+  const hiddenToday = () => Storage.get("kmsgHidden", "") === todayKey();
+  function render() {
+    card.hidden = hiddenToday();
+    nextBtn.hidden = !opened;
+    bubble.textContent = opened ? AFFIRMATIONS[i] : "A message from Kitsu";
+    bubble.classList.toggle("is-open", opened);
+  }
+  function next() { i = (i + 1) % AFFIRMATIONS.length; render(); }
+
+  bubble.addEventListener("click", () => { if (opened) next(); else { opened = true; render(); } });
+  nextBtn.addEventListener("click", next);
+  document.getElementById("kmsg-x").addEventListener("click", () => { Storage.set("kmsgHidden", todayKey()); render(); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });   // returns the next day
+  render();
 })();
 
 // ---- Step 8: A Letter to Tomorrow ----
@@ -1031,19 +1092,18 @@ const Shelf = (function () {
       const dustBtn = document.createElement("button");
       dustBtn.type = "button";
       dustBtn.className = "btn btn-small";
-      dustBtn.textContent = days === 0 ? "Dusted today" : "Dust off";
-      dustBtn.disabled = days === 0;
-      dustBtn.addEventListener("click", () => dustOff(b.id, book, dustBtn));
+      dustBtn.textContent = "Dust off";
+      dustBtn.addEventListener("click", () => dustOff(b.id, book, dustBtn, days));
 
       const rmBtn = document.createElement("button");
       rmBtn.type = "button";
       rmBtn.className = "btn btn-quiet btn-small";
-      rmBtn.textContent = "Remove";
+      rmBtn.textContent = "Delete";
       let armed = null;
       rmBtn.addEventListener("click", () => {            // two taps to remove, so no accidents
         if (armed) { clearTimeout(armed); remove(b.id); return; }
         rmBtn.textContent = "Sure?";
-        armed = setTimeout(() => { armed = null; rmBtn.textContent = "Remove"; }, 3000);
+        armed = setTimeout(() => { armed = null; rmBtn.textContent = "Delete"; }, 3000);
       });
 
       actions.append(dustBtn, rmBtn);
@@ -1052,7 +1112,8 @@ const Shelf = (function () {
     });
   }
 
-  function dustOff(id, bookEl, btn) {
+  function dustOff(id, bookEl, btn, days) {
+    if (days === 0) { Kitsu.show("Already spotless! Come back when it gathers a little dust."); return; }
     btn.disabled = true;
     bookEl.classList.add("dusting");
     const finish = () => {
@@ -1339,4 +1400,29 @@ const Info = (function () {
   if (!Storage.get("welcomeSeen", false)) open("welcome", null);
 
   return { open, close };
+})();
+
+// ---- Pomodoro Room window controls (minimise, maximise, close) ----
+(function initTimerWindow() {
+  const win = document.getElementById("timer"), body = document.getElementById("timer-body");
+  const minBtn = document.getElementById("tw-min"), maxBtn = document.getElementById("tw-max");
+  const closedBar = document.getElementById("timer-closed");
+  function setMin(on) {
+    win.classList.toggle("is-min", on);
+    minBtn.setAttribute("aria-label", on ? "Restore Pomodoro Room" : "Minimise Pomodoro Room");
+    if (on) setMax(false);
+  }
+  function setMax(on) {
+    win.classList.toggle("is-max", on);
+    maxBtn.setAttribute("aria-label", on ? "Restore Pomodoro Room size" : "Maximise Pomodoro Room");
+    if (on) win.classList.remove("is-min");
+  }
+  minBtn.addEventListener("click", () => setMin(!win.classList.contains("is-min")));
+  maxBtn.addEventListener("click", () => setMax(!win.classList.contains("is-max")));
+  document.getElementById("tw-close").addEventListener("click", () => { setMax(false); win.hidden = true; closedBar.hidden = false; });
+  document.getElementById("timer-reopen").addEventListener("click", () => { win.hidden = false; closedBar.hidden = true; });
+  document.addEventListener("keydown", e => {
+    const noteOpen = !document.getElementById("note-modal").hidden || !document.getElementById("info-modal").hidden;
+    if (e.key === "Escape" && win.classList.contains("is-max") && !noteOpen) setMax(false);
+  });
 })();
