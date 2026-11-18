@@ -84,8 +84,6 @@
     <main class="workspace" id="home">
       <!-- KITSU DIALOGUE BOX -->
       <section class="kitsu" aria-label="Kitsu">
-        <!-- Kitsu sprite: kitsu.png, saved in the same folder as index.html -->
-        <img class="kitsu-portrait" id="kitsu-portrait" src="kitsu.png" alt="Kitsu" width="85" height="100">
         <div class="kitsu-box">
           <p class="kitsu-name">Kitsu <span class="kitsu-title">Tea House Attendant</span></p>
           <p class="kitsu-text" id="kitsu-text" aria-live="polite"></p>
@@ -223,10 +221,12 @@
             <ul class="diary-list" id="diary-list"></ul>
           </div>
           <div class="diary-editor">
-            <p class="diary-meta" id="diary-meta"></p>
             <input class="diary-entry-title" id="diary-entry-title" type="text" maxlength="60" placeholder="Entry title (optional)" aria-label="Entry title">
             <textarea class="diary-text" id="diary-text" placeholder="Dear diary..." aria-label="Diary entry"></textarea>
             <div class="diary-actions">
+              <label class="diary-date" for="diary-entry-date">Date
+                <input type="date" id="diary-entry-date">
+              </label>
               <button class="btn" id="diary-save" type="button">Save entry</button>
               <button class="btn btn-quiet" id="diary-delete" type="button" disabled>Delete</button>
               <p class="diary-status" id="diary-status" role="status"></p>
@@ -288,6 +288,8 @@
     <button class="link-btn" type="button" data-info="credits">Credits &amp; Acknowledgements</button>
     <span aria-hidden="true">&middot;</span>
     <button class="link-btn" type="button" data-info="welcome">A note to visitors</button>
+    <span aria-hidden="true">&middot;</span>
+    <button class="link-btn" id="kmsg-restore" type="button">Message from Kitsu</button>
   </footer>
 
   <!-- INFO MODAL (credits, welcome, about, contact) -->
