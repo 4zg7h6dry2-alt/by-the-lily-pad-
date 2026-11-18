@@ -30,7 +30,7 @@
   --pad-sm: 10px 12px;   /* small dialogue boxes (vertical horizontal) */
   --pad-lg: 16px 20px;   /* larger dialogue boxes */
   --gap-text: 8px;       /* gap between text elements */
-  --border: 1px solid var(--charcoal);
+  --border: 1px solid rgba(100, 45, 59, 0.5);
   --line-height: 1.5;
 
   /* Fonts */
@@ -235,23 +235,22 @@ a { color: inherit; }
 
 .kitsu {
   display: flex;
-  align-items: stretch;
+  align-items: flex-end;
   gap: var(--space-3);
+  max-width: 600px;
 }
 .kitsu-portrait {
   flex: none;
-  width: 80px;
+  display: block;
+  width: 96px;
   height: auto;
-  min-height: 80px;
-  background: var(--sakura);
-  border: 2px solid var(--charcoal);
-  border-radius: var(--radius);
+  align-self: flex-end;
 }
 .kitsu-box {
   position: relative;
   flex: 1;
-  min-height: 88px;
-  padding: var(--pad-lg);
+  min-height: 72px;
+  padding: var(--pad-sm);
   background: var(--charcoal);
   color: var(--ivory);
   border: 2px solid var(--charcoal);
@@ -269,7 +268,7 @@ a { color: inherit; }
   margin: 0;
   padding-right: var(--space-5);
   font-size: 18px;
-  min-height: 54px;
+  min-height: 40px;
 }
 .kitsu-next {
   position: absolute;
@@ -288,7 +287,7 @@ a { color: inherit; }
   .kitsu-next { animation: none; }
 }
 @media (max-width: 639px) {
-  .kitsu-portrait { width: 64px; min-height: 64px; }
+  .kitsu-portrait { width: 72px; }
   .kitsu-text { font-size: 16px; }
 }
 
@@ -363,7 +362,7 @@ a { color: inherit; }
   font-size: 14px;
   line-height: var(--line-height);
   color: var(--charcoal);
-  background: #fff9ec;
+  background: #FAF0DD;
   border: var(--border);
   border-radius: var(--radius-sm);
 }
@@ -465,7 +464,7 @@ a { color: inherit; }
   font-size: 13px;
   padding: var(--space-1) var(--space-2);
   color: var(--charcoal);
-  background: #fff9ec;
+  background: #FAF0DD;
   border: var(--border);
   border-radius: var(--radius-sm);
 }
@@ -498,7 +497,7 @@ a { color: inherit; }
   font-size: 18px;
   font-weight: 700;
   color: var(--burgundy);
-  background: #fff9ec;
+  background: #FAF0DD;
   border: var(--border);
   border-radius: var(--radius-sm);
 }
@@ -512,7 +511,7 @@ a { color: inherit; }
   font-size: 15px;
   line-height: var(--line-height);
   color: var(--charcoal);
-  background: #fff9ec;
+  background: #FAF0DD;
   border: var(--border);
   border-radius: var(--radius-sm);
 }
@@ -586,7 +585,7 @@ a { color: inherit; }
 .letter-paper {
   margin: 0 0 var(--gap-text);
   padding: var(--pad-lg);
-  background: #fff9ec;
+  background: #FAF0DD;
   border: 1px solid var(--gold);
   border-radius: var(--radius-sm);
   font-family: var(--font-heading);
@@ -605,7 +604,7 @@ a { color: inherit; }
   font-size: 14px;
   line-height: var(--line-height);
   color: var(--charcoal);
-  background: #fff9ec;
+  background: #FAF0DD;
   border: var(--border);
   border-radius: var(--radius-sm);
 }
@@ -626,7 +625,7 @@ a { color: inherit; }
   font-family: var(--font-ui);
   font-size: 14px;
   color: var(--charcoal);
-  background: #fff9ec;
+  background: #FAF0DD;
   border: var(--border);
   border-radius: var(--radius-sm);
 }
@@ -711,7 +710,7 @@ a { color: inherit; }
   font-family: var(--font-ui);
   font-size: 14px;
   color: var(--charcoal);
-  background: #fff9ec;
+  background: #FAF0DD;
   border: 1px solid var(--gold);
   border-radius: var(--radius-sm);
 }
@@ -786,7 +785,7 @@ a { color: inherit; }
   font-family: var(--font-mono);
   font-size: 14px;
   color: var(--charcoal);
-  background: #fff9ec;
+  background: #FAF0DD;
   border: var(--border);
   border-radius: var(--radius-sm);
 }
@@ -826,7 +825,7 @@ a { color: inherit; }
 .mood-name { margin: var(--space-2) 0 var(--space-1); font-family: var(--font-pixel); font-size: 18px; }
 .mood-text { margin: 0 0 var(--space-2); min-height: 40px; font-size: 13px; }
 .mood-nav { display: flex; align-items: center; justify-content: center; gap: var(--space-3); margin-bottom: var(--space-2); }
-.mood-arrow { background: var(--ivory); }
+.mood-arrow { background: var(--ivory); color: var(--charcoal); }
 .mood-count { font-family: var(--font-mono); font-size: 12px; }
 .mood-save { width: 100%; padding: var(--space-2) var(--space-3); }
 .mood-saved { margin: var(--space-2) 0 0; min-height: 18px; font-size: 12px; }
@@ -912,7 +911,7 @@ a { color: inherit; }
   height: auto;
   padding: var(--space-1) var(--space-3) var(--space-1) 34px;
   font-size: 14px;
-  background: #fff9ec;
+  background: #FAF0DD;
   border: 1px solid var(--gold);
   border-radius: var(--radius-sm);
 }
@@ -931,3 +930,181 @@ a { color: inherit; }
 .mood-board-grid { display: flex; gap: var(--space-2); overflow-x: auto; padding-bottom: var(--space-1); }
 .board-cell { flex: none; width: 40px; }
 .board-icon { width: 32px; height: 32px; max-width: none; }
+
+/* 22. LINED DIARY PAGE ------------------------------------- */
+.diary-editor { background: #F9EFDB; }
+.diary-entry-title {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--burgundy);
+  border-radius: 0;
+  padding: var(--space-1) 0;
+}
+.diary-text {
+  padding: 6px 12px 0 52px;
+  line-height: 28px;
+  font-size: 16px;
+  border: 1px solid rgba(100, 45, 59, 0.25);
+  border-radius: var(--radius-sm);
+  background-color: #F9EFDB;
+  background-image:
+    linear-gradient(to right, transparent 40px, rgba(199, 71, 54, 0.4) 40px, rgba(199, 71, 54, 0.4) 42px, transparent 42px),
+    repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(100, 45, 59, 0.22) 27px, rgba(100, 45, 59, 0.22) 28px);
+  background-position: 0 0, 0 6px;
+  background-attachment: local;
+}
+
+/* 23. MESSAGE FROM KITSU ----------------------------------- */
+.kmsg { position: relative; }
+.kmsg[hidden] { display: none; }
+.kmsg-x {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  line-height: 1;
+  color: var(--ivory);
+  background: var(--vermilion);
+  border: 1px solid var(--charcoal);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.kmsg-row { display: flex; align-items: flex-end; gap: var(--space-3); padding-top: var(--space-4); }
+.kmsg-kitsu { flex: none; display: block; width: 60px; height: auto; }
+.kmsg-bubble {
+  position: relative;
+  flex: 1;
+  min-height: 56px;
+  padding: var(--pad-sm);
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  text-align: left;
+  color: var(--charcoal);
+  background: #FAF0DD;
+  border: 2px solid var(--charcoal);
+  border-radius: var(--radius-sm);
+  box-shadow: 2px 2px 0 var(--burgundy);
+  cursor: pointer;
+}
+.kmsg-bubble:not(.is-open)::after { content: "tap to open"; display: block; margin-top: var(--space-1); font-size: 11px; opacity: 0.65; }
+.kmsg-bubble::before {   /* little speech-bubble tail pointing at Kitsu */
+  content: "";
+  position: absolute;
+  left: -9px;
+  bottom: 14px;
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+  border-right-color: var(--charcoal);
+  border-left: 0;
+}
+.kmsg-next { margin-top: var(--space-2); }
+.kmsg-next[hidden] { display: none; }
+
+/* 24. WARM PASS: parchment, soft cards, burgundy structure ---- */
+html { background: #DCC59C; }
+body {
+  background: radial-gradient(ellipse at 50% 0%, #F0E2C6 0%, #E6D2AD 55%, #DCC59C 100%);
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+/* Soft cream cards instead of bright flat ones */
+.card {
+  background: linear-gradient(180deg, #F8EDD8 0%, #F1E1C4 100%);
+  border: 1px solid rgba(100, 45, 59, 0.35);
+  box-shadow: 0 2px 8px rgba(100, 45, 59, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+.window, .modal-box, .shrine-panel {
+  background: #F5E8CF;
+  border: 1px solid rgba(100, 45, 59, 0.55);
+  box-shadow: 0 4px 14px rgba(41, 39, 39, 0.28);
+}
+.topbar {
+  background: linear-gradient(180deg, #70344A 0%, #5A2635 100%);
+  border: 1px solid rgba(41, 39, 39, 0.55);
+  box-shadow: 0 3px 10px rgba(41, 39, 39, 0.3);
+}
+.window-bar, .modal-bar, .status-bar { background-image: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.08)); }
+
+/* Burgundy buttons, like your plan */
+.btn { background: var(--burgundy); color: var(--ivory); border: 1px solid rgba(41, 39, 39, 0.55); box-shadow: 0 2px 0 rgba(41, 39, 39, 0.3); }
+.btn:hover { background: #7A3A4D; }
+.btn:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(41, 39, 39, 0.3); }
+.btn:disabled { opacity: 0.6; box-shadow: none; }
+.btn-quiet { background: transparent; color: var(--burgundy); border: 1px solid rgba(100, 45, 59, 0.5); box-shadow: none; }
+.btn-quiet:hover { background: rgba(223, 161, 165, 0.45); color: var(--burgundy); }
+.mood-arrow { background: #F5E8CF; color: var(--burgundy); }
+
+/* Softer hard shadows */
+.kitsu-box { background: #2F2226; box-shadow: inset 0 0 0 2px var(--gold), 0 3px 8px rgba(41, 39, 39, 0.35); }
+.book { box-shadow: 0 3px 6px rgba(41, 39, 39, 0.35); }
+.kmsg-bubble { box-shadow: 0 2px 4px rgba(41, 39, 39, 0.25); border-color: rgba(100, 45, 59, 0.6); }
+.mood-status { box-shadow: 0 3px 8px rgba(41, 39, 39, 0.22); }
+.diary-editor { background: #F9EFDB; }
+
+/* Dark footer strip, like your plan */
+.footer { margin-top: var(--space-4); background: #3B2630; color: var(--ivory); border-top: 1px solid rgba(246, 235, 213, 0.2); }
+.footer .link-btn { color: var(--gold); }
+.footer .link-btn:hover { color: var(--sakura); }
+
+/* Keep each card's own accents on top of the warm card base */
+.card.mood-status {
+  border: 2px solid var(--fam);
+  background: linear-gradient(var(--fam-soft), var(--fam-soft)), linear-gradient(180deg, #F8EDD8 0%, #F1E1C4 100%);
+}
+.card.thought { border-left: 4px solid var(--vermilion); }
+
+/* 25. POMODORO ROOM WINDOW --------------------------------- */
+.timer-window[hidden] { display: none; }
+.window-title-wrap { color: var(--ivory); }
+.timer-window.is-min .timer-body { display: none; }
+.timer-window.is-max { overflow: auto; }
+.timer-body { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); padding: var(--pad-lg); font-family: var(--font-ui); }
+.timer-art { flex: none; width: 96px; height: auto; display: block; }
+.timer-main { flex: 1 1 220px; min-width: 0; text-align: center; }
+.timer-main .timer-display { margin: 0; font-size: 60px; }
+.timer-line { margin: var(--space-1) 0 var(--space-3); font-size: 14px; }
+.timer-main .timer-actions { justify-content: center; }
+.btn-reset { background: var(--vermilion); }
+.btn-reset:hover { background: #D85A48; }
+.btn-skip { background: var(--moss); }
+.btn-skip:hover { background: #768866; }
+.timer-side { flex: 0 1 190px; padding-left: var(--space-4); border-left: 1px dashed rgba(100, 45, 59, 0.45); }
+.timer-side-title { margin: 0 0 var(--space-2); font-family: var(--font-heading); font-weight: 700; font-size: 16px; color: var(--burgundy); }
+.timer-side .mode-tabs { flex-direction: column; align-items: flex-start; gap: var(--space-1); margin-bottom: var(--space-3); }
+.timer-side .mode-btn { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-1) 0; border: 0; background: transparent; color: var(--charcoal); font-size: 14px; text-align: left; }
+.timer-side .mode-btn::before { content: ""; flex: none; width: 14px; height: 14px; border: 1px solid var(--burgundy); border-radius: 50%; background: transparent; }
+.timer-side .mode-btn[aria-pressed="true"] { background: transparent; color: var(--burgundy); font-weight: 700; }
+.timer-side .mode-btn[aria-pressed="true"]::before { background: radial-gradient(circle, var(--burgundy) 0 4px, transparent 5px); }
+.timer-progress { flex: 1 1 100%; margin-top: 0; padding-top: var(--space-3); }
+@media (max-width: 639px) {
+  .timer-main .timer-display { font-size: 48px; }
+  .timer-side { flex: 1 1 100%; padding-left: 0; border-left: 0; border-top: 1px dashed rgba(100, 45, 59, 0.45); padding-top: var(--space-3); }
+}
+
+/* 26. DIARY CALENDAR --------------------------------------- */
+.window-body { grid-template-columns: 220px minmax(0, 1fr); }
+.cal { padding: var(--space-2); background: rgba(255, 255, 255, 0.35); border: 1px solid rgba(100, 45, 59, 0.3); border-radius: var(--radius-sm); }
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-1); }
+.cal-title { font-family: var(--font-heading); font-weight: 700; font-size: 14px; color: var(--burgundy); }
+.cal-nav { width: 24px; height: 24px; padding: 0; font-size: 18px; line-height: 1; color: var(--burgundy); background: transparent; border: 0; cursor: pointer; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.cal-dow { font-family: var(--font-mono); font-size: 10px; opacity: 0.7; }
+.cal-day { position: relative; aspect-ratio: 1; padding: 0; font-family: var(--font-mono); font-size: 11px; color: var(--charcoal); background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm); cursor: pointer; }
+.cal-day:hover { background: rgba(223, 161, 165, 0.5); }
+.cal-day.is-today { background: var(--sakura); font-weight: 700; }
+.cal-day.is-selected { background: var(--burgundy); color: var(--ivory); }
+.cal-day.has-entry::after { content: ""; position: absolute; left: 50%; bottom: 2px; width: 4px; height: 4px; margin-left: -2px; background: var(--vermilion); }
+.cal-day.is-selected.has-entry::after { background: var(--gold); }
+
+/* 27. OPTIONAL SCENERY + KITSU ON HIS CUSHION --------------- */
+html { background: radial-gradient(ellipse at 50% 0%, #F0E2C6 0%, #E6D2AD 55%, #DCC59C 100%) no-repeat; background-color: #DCC59C; min-height: 100%; }
+body { background: transparent; }
+.scenery { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: url("scenery.png") center bottom / cover no-repeat; opacity: 0.45; }
+.deco-cushion { position: fixed; right: 12px; bottom: 8px; width: 150px; height: auto; z-index: 3; pointer-events: none; }
+@media (max-width: 1023px) { .deco-cushion { display: none; } }
