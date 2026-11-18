@@ -1006,12 +1006,8 @@ a { color: inherit; }
 .kmsg-next[hidden] { display: none; }
 
 /* 24. WARM PASS: parchment, soft cards, burgundy structure ---- */
-html { background: #DCC59C; }
-body {
-  background: radial-gradient(ellipse at 50% 0%, #F0E2C6 0%, #E6D2AD 55%, #DCC59C 100%);
-  background-repeat: no-repeat;
-  min-height: 100vh;
-}
+html { background: radial-gradient(ellipse at 50% 0%, #F0E2C6 0%, #E6D2AD 55%, #DCC59C 100%) #DCC59C; background-repeat: no-repeat; min-height: 100%; }
+body { background: transparent; min-height: 100vh; }
 
 /* Soft cream cards instead of bright flat ones */
 .card {
