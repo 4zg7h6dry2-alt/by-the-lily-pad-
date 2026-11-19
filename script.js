@@ -245,6 +245,19 @@ const SessionLog = {
   }
 };
 
+// Study time per day (seconds). The fluid bar fills from this, so even a 1-minute session counts.
+const STUDY_REFERENCE_MIN = 120;   // the bar looks "full" at this many minutes; it's only a scale, not a target
+const StudyLog = {
+  all() { return Storage.get("studySeconds", {}); },
+  today() { return this.all()[todayKey()] || 0; },
+  add(sec) {
+    if (!(sec > 0)) return;
+    const h = this.all();
+    h[todayKey()] = (h[todayKey()] || 0) + Math.round(sec);
+    Storage.set("studySeconds", h);
+  }
+};
+
 const Timer = (function () {
   const displayEl = document.getElementById("timer-display");
   const startBtn  = document.getElementById("timer-start");
@@ -255,6 +268,7 @@ const Timer = (function () {
   const focusInput = document.getElementById("focus-minutes");
   const skipBtn = document.getElementById("timer-skip");
   const MODE_LABEL = { focus: "Focus", short: "Short break", long: "Long break" };
+  const fillEl = document.getElementById("progress-fill");
   const BASE_TITLE = document.title;
 
   const state = { mode: "focus", total: DURATIONS.focus * 60, remaining: DURATIONS.focus * 60,
@@ -278,17 +292,27 @@ const Timer = (function () {
 
   // Little Accomplishment Bar: one pixel segment per completed focus session today
   function renderBar() {
-    const n = SessionLog.today();
+    const sessions = SessionLog.today(), secs = StudyLog.today();
     state.barDay = todayKey();
-    barEl.replaceChildren();
-    for (let i = 0; i < n; i++) {
-      const seg = document.createElement("span");
-      seg.className = "progress-seg";
-      barEl.appendChild(seg);
+    const pct = Math.min(100, secs / (STUDY_REFERENCE_MIN * 60) * 100);
+    fillEl.style.width = pct + "%";
+    fillEl.style.minWidth = pct > 0 ? "10px" : "0";
+    barEl.setAttribute("aria-valuenow", String(Math.round(pct)));
+    const mins = Math.floor(secs / 60);
+    const studied = secs === 0 ? "" : mins === 0 ? "under a minute" : mins >= 60 ? Math.floor(mins / 60) + " h " + (mins % 60) + " min" : mins + " min";
+    const parts = [];
+    if (studied) parts.push(studied + " studied today");
+    if (sessions) parts.push(sessions + (sessions === 1 ? " session" : " sessions"));
+    countEl.textContent = parts.length ? parts.join(" \u00B7 ") : "No sessions yet. No rush.";
+    barEl.setAttribute("aria-label", countEl.textContent);
+  }
+
+  // Study time counts when a session ends (finished, reset or skipped), even if it was short
+  function bankElapsed() {
+    if (state.mode === "focus" && state.remaining < state.total) {
+      StudyLog.add(state.total - state.remaining);
+      renderBar();
     }
-    barEl.setAttribute("aria-label", n + (n === 1 ? " session" : " sessions") + " completed today");
-    countEl.textContent = n === 0 ? "No sessions yet. No rush."
-                                  : n + (n === 1 ? " session" : " sessions") + " today";
   }
 
   function setMode(mode) {
@@ -323,6 +347,7 @@ const Timer = (function () {
     stopTicking();
     if (state.mode === "focus") {
       SessionLog.add();
+      StudyLog.add(state.total);
       renderBar();
       Kitsu.say("complete");
       document.dispatchEvent(new CustomEvent("kitsune:sessionComplete")); // Step 5 listens here
@@ -359,6 +384,7 @@ const Timer = (function () {
   function reset() {
     const wasStarted = state.remaining < state.total;
     stopTicking();
+    bankElapsed();
     if (state.mode === "focus" && wasStarted) document.dispatchEvent(new CustomEvent("kitsune:sessionInterrupted")); // Step 5
     setMode(state.mode);
   }
@@ -379,6 +405,7 @@ const Timer = (function () {
   function skip() {
     const wasStarted = state.remaining < state.total;
     stopTicking();
+    bankElapsed();
     if (state.mode === "focus") {
       if (wasStarted) document.dispatchEvent(new CustomEvent("kitsune:sessionInterrupted"));
       setMode(SessionLog.today() > 0 && SessionLog.today() % 4 === 0 ? "long" : "short");
@@ -390,7 +417,7 @@ const Timer = (function () {
 
   startBtn.addEventListener("click", toggle);
   resetBtn.addEventListener("click", reset);
-  modeBtns.forEach(b => b.addEventListener("click", () => { if (!state.running) setMode(b.dataset.mode); }));
+  modeBtns.forEach(b => b.addEventListener("click", () => { if (!state.running) { bankElapsed(); setMode(b.dataset.mode); } }));
 
   // New day while the page stays open: bar starts fresh, history is kept
   setInterval(() => { if (todayKey() !== state.barDay) renderBar(); }, 60000);
@@ -1465,4 +1492,102 @@ const Info = (function () {
     document.getElementById("bar-icon").replaceChildren(img);
   };
   img.src = "bar-icon.png";   // if the file is missing, nothing happens
+})();
+
+// ---- Themes (Kitsu's Themes) ----
+// Each theme uses one of your kimono foxes as its little preview (cut from fox-moods.png).
+const THEMES = [
+  { id: "teahouse", name: "Tea House", text: "warm parchment and burgundy", fox: "thinking" },
+  { id: "sakura",   name: "Sakura",    text: "soft pink and white, with petals", fox: "tender", petals: true },
+  { id: "matcha",   name: "Matcha",    text: "sage and moss green", fox: "calm" },
+  { id: "lantern",  name: "Lantern",   text: "a cozy night mode", fox: "heavy" },
+  { id: "shrine",   name: "Shrine",    text: "vermilion and gold", fox: "intense" }
+];
+
+const Themes = (function () {
+  const $ = id => document.getElementById(id);
+  const btn = $("theme-btn"), panel = $("theme-panel"), list = $("theme-list");
+  const petalsRow = $("theme-petals-row"), petalsBox = $("theme-petals"), petalsEl = $("petals");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const root = document.documentElement;
+  const optButtons = {};
+  let current = "teahouse";
+
+  function paintThumb(el, familyId) {
+    const [x, y, w, h] = FOX_SHEET.win[familyId];
+    el.style.backgroundSize = (FOX_SHEET.w / w * 100) + "% auto";
+    el.style.backgroundPosition = (x / (FOX_SHEET.w - w) * 100) + "% " + (y / (FOX_SHEET.h - h) * 100) + "%";
+  }
+
+  function stopPetals() { petalsEl.replaceChildren(); }
+  function startPetals() {
+    stopPetals();
+    if (reduceMotion) return;
+    for (let i = 0; i < 16; i++) {
+      const p = document.createElement("span");
+      const size = 10 + Math.random() * 8;
+      p.className = "petal " + (i % 2 ? "petal-b" : "petal-a");
+      p.style.left = (Math.random() * 100) + "%";
+      p.style.width = p.style.height = size + "px";
+      p.style.setProperty("--dur", (12 + Math.random() * 12) + "s");
+      p.style.setProperty("--drift", (Math.random() * 120 - 60) + "px");
+      p.style.setProperty("--spin", (Math.random() * 360 - 180) + "deg");
+      p.style.animationDelay = (-Math.random() * 20) + "s";
+      petalsEl.appendChild(p);
+    }
+  }
+
+  function syncPetals() {
+    const t = THEMES.find(x => x.id === current);
+    const on = Storage.get("petals", true);
+    petalsRow.hidden = !(t && t.petals);
+    petalsBox.checked = on;
+    if (t && t.petals && on) startPetals(); else stopPetals();
+  }
+
+  function apply(id, remember) {
+    if (!THEMES.some(t => t.id === id)) id = "teahouse";
+    current = id;
+    root.setAttribute("data-theme", id);
+    if (remember) Storage.set("theme", id);
+    THEMES.forEach(t => optButtons[t.id].setAttribute("aria-pressed", String(t.id === id)));
+    syncPetals();
+  }
+
+  function open() { panel.hidden = false; btn.setAttribute("aria-expanded", "true"); }
+  function close() { panel.hidden = true; btn.setAttribute("aria-expanded", "false"); }
+
+  THEMES.forEach(t => {
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "theme-opt";
+    b.setAttribute("aria-pressed", "false");
+    const thumb = document.createElement("span");
+    thumb.className = "theme-thumb";
+    thumb.setAttribute("aria-hidden", "true");
+    paintThumb(thumb, t.fox);
+    const label = document.createElement("span");
+    const name = document.createElement("span");
+    name.className = "theme-name";
+    name.textContent = t.name;
+    const desc = document.createElement("span");
+    desc.className = "theme-desc";
+    desc.textContent = t.text;
+    label.append(name, desc);
+    b.append(thumb, label);
+    b.addEventListener("click", () => apply(t.id, true));
+    optButtons[t.id] = b;
+    li.appendChild(b);
+    list.appendChild(li);
+  });
+
+  btn.addEventListener("click", e => { e.stopPropagation(); panel.hidden ? open() : close(); });
+  $("theme-close").addEventListener("click", close);
+  petalsBox.addEventListener("change", () => { Storage.set("petals", petalsBox.checked); syncPetals(); });
+  document.addEventListener("click", e => { if (!panel.hidden && !panel.contains(e.target) && !btn.contains(e.target)) close(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) close(); });
+
+  apply(Storage.get("theme", "teahouse"), false);
+  return { apply };
 })();
