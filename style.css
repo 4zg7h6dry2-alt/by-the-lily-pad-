@@ -147,11 +147,13 @@ a { color: inherit; }
       "top   top"
       "clock clock"
       "main  main"
-      "left  kmsg";
+      "left  kmsg"
+      "left  amb";
   }
   .sidebar-right { display: contents; }   /* its cards become grid cells so the clock can sit near the top */
   .clock { grid-area: clock; }
   .kmsg  { grid-area: kmsg; }
+  .ambience { grid-area: amb; }
 }
 
 /* Mobile: one comfortable vertical stack */
@@ -163,7 +165,8 @@ a { color: inherit; }
       "clock"
       "main"
       "left"
-      "kmsg";
+      "kmsg"
+      "amb";
     padding: var(--space-3);
   }
 }
@@ -1444,3 +1447,23 @@ html[data-theme="midnight"] {
 /* Theme menu: a sakura flower in each theme's colour */
 .theme-flower-wrap { flex: none; display: grid; place-items: center; width: 40px; height: 40px; }
 .theme-flower { display: block; width: 32px; height: 32px; fill: currentColor; filter: drop-shadow(0 0 1px rgba(var(--line-rgb), 0.9)); }
+
+/* 33. KITSU'S AMBIENCE ---------------------------------------- */
+.amb-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.amb-chip {
+  padding: var(--space-1) var(--space-3);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid rgba(var(--line-rgb), 0.5);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.amb-chip[aria-pressed="true"] { background: var(--accent); color: var(--ivory); border-color: var(--accent); }
+.amb-controls { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-3); }
+.amb-vol { display: flex; align-items: center; gap: var(--space-2); font-size: 13px; flex: 1 1 140px; }
+.amb-vol input { flex: 1; min-width: 0; accent-color: var(--accent); }
+.amb-vol[hidden] { display: none; }
+.amb-status { margin: var(--space-2) 0 0; font-size: 12px; min-height: 18px; }
+@media (hover: hover) { .amb-chip:hover { border-color: var(--accent); } }
