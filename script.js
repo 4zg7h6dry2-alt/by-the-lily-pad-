@@ -752,12 +752,6 @@ const Diary = (function () {
 
 // ---- Step 7: Sidebar (mood, clock, quote) ----
 
-// Mood board faces: mood-board.png (1536 x 1024), saved in the same folder as index.html.
-// One mask per family. Each window is a 490 x 490 square: [x, y] of its top-left corner.
-const MASK_SHEET = {
-  w: 1536, h: 1024, cell: 490,
-  win: { tender: [20, 16], calm: [528, 16], bright: [1046, 16], thinking: [22, 520], heavy: [531, 520], intense: [1039, 520] }
-};
 const MOODS = [
   { id: "melancholic",   name: "Melancholic",   text: "A soft, quiet sadness with a little beauty in it." },
   { id: "nostalgic",     name: "Nostalgic",     text: "Warm longing for a time or place that has passed." },
@@ -780,7 +774,7 @@ const MOODS = [
 ];
 
 // Mood families: each shares one kimono-fox sprite (fox-moods.png) and one colour.
-// The small family masks (mood-board.png) are used on the mood board.
+// The mood board shows a tiny pixel flower in each family colour (drawn in code).
 const FAMILIES = [
   { id: "tender",   name: "Tender & Wistful", moods: ["nostalgic", "sentimental", "yearning"] },
   { id: "calm",     name: "Calm & Still",     moods: ["serene", "tranquil", "content"] },
@@ -812,13 +806,8 @@ const Mood = (function () {
     el.style.backgroundSize = (FOX_SHEET.w / w * 100) + "% auto";
     el.style.backgroundPosition = (x / (FOX_SHEET.w - w) * 100) + "% " + (y / (FOX_SHEET.h - h) * 100) + "%";
   }
-  // A small family mask from mood-board.png, used on the mood board
-  function paintMask(el, familyId) {
-    const [x0, y0] = MASK_SHEET.win[familyId], c = MASK_SHEET.cell;
-    el.style.backgroundImage = 'url("mood-board.png")';
-    el.style.backgroundSize = (MASK_SHEET.w / c * 100) + "% " + (MASK_SHEET.h / c * 100) + "%";
-    el.style.backgroundPosition = (x0 / (MASK_SHEET.w - c) * 100) + "% " + (y0 / (MASK_SHEET.h - c) * 100) + "%";
-  }
+  // A tiny pixel flower in the family colour (drawn in code, nothing to upload)
+  const FLOWER_SVG = '<svg class="board-flower" aria-hidden="true" focusable="false"><use href="#px-flower"/></svg>';
 
   const getLog = () => Storage.get("moodLog", {});
   function keyFor(d) {
@@ -860,7 +849,7 @@ const Mood = (function () {
       const icon = document.createElement("span");
       icon.className = "board-icon" + (id ? "" : " empty");
       const label = i === 0 ? "Today" : d.toLocaleDateString(undefined, { weekday: "short" });
-      if (id) { paintMask(icon, CYCLE.find(c => c.id === id).family.id); li.title = label + ": " + byId[id].name; }
+      if (id) { icon.dataset.family = CYCLE.find(c => c.id === id).family.id; icon.innerHTML = FLOWER_SVG; li.title = label + ": " + byId[id].name; }
       const day = document.createElement("span");
       day.className = "board-day";
       day.textContent = label;
@@ -1495,13 +1484,20 @@ const Info = (function () {
 })();
 
 // ---- Themes (Kitsu's Themes) ----
-// Each theme uses one of your kimono foxes as its little preview (cut from fox-moods.png).
+// "colors" are the little preview chips in the menu. petals: true = the Falling petals option is offered.
 const THEMES = [
-  { id: "teahouse", name: "Tea House", text: "warm parchment and burgundy", fox: "thinking" },
-  { id: "sakura",   name: "Sakura",    text: "soft pink and white, with petals", fox: "tender", petals: true },
-  { id: "matcha",   name: "Matcha",    text: "sage and moss green", fox: "calm" },
-  { id: "lantern",  name: "Lantern",   text: "a cozy night mode", fox: "heavy" },
-  { id: "shrine",   name: "Shrine",    text: "vermilion and gold", fox: "intense" }
+  { id: "teahouse",   name: "Tea House",        text: "warm parchment and burgundy",       colors: ["#F0E2C6", "#642D3B", "#C74736", "#C6A15B", "#657653", "#DFA1A5"] },
+  { id: "sakura",     name: "Sakura",           text: "soft pink and white, with petals",  colors: ["#FFF3F5", "#F2CAD3", "#DFA1A5", "#CC7C90", "#B65A6E", "#8E4A5C"], petals: true },
+  { id: "peach",      name: "Peach Blossom",    text: "a warm spring morning",             colors: ["#FFF0E5", "#F2C6AD", "#E69A8D", "#C87570", "#713F42", "#B68A58"], petals: true },
+  { id: "plum",       name: "Plum Blossom",     text: "elegant, romantic, a little mysterious", colors: ["#F3E9E7", "#D8B8C2", "#B17A91", "#85536F", "#533448", "#B99B75"], petals: true },
+  { id: "wisteria",   name: "Wisteria Moon",    text: "a quiet, dreamy evening in the garden", colors: ["#EDE8F1", "#C9B8D6", "#A18CB8", "#716181", "#40354E", "#BBAA83"] },
+  { id: "mossgarden", name: "Moss Garden",      text: "a peaceful garden after the rain",  colors: ["#E9E8D6", "#C8CEB0", "#87977A", "#526B51", "#344638", "#B99A69"] },
+  { id: "bamboo",     name: "Enchanted Bamboo", text: "an overgrown shrine and forest shadows", colors: ["#EAE8D6", "#B9C49A", "#82936B", "#526B4D", "#304538", "#B58A59"] },
+  { id: "snowfox",    name: "Snow Fox",         text: "frosted windows and a little fox warmth", colors: ["#F4F2EE", "#DCE1E3", "#B5C2CA", "#81939E", "#53636F", "#A96C68"] },
+  { id: "bluehour",   name: "Blue Hour",        text: "cool and dreamy, just before nightfall", colors: ["#E8EEF0", "#B7C9D1", "#6D8999", "#40596B", "#293B50", "#D2AD78"] },
+  { id: "shrine",     name: "Shrine",           text: "vermilion and gold",                colors: ["#F8EAD4", "#BC4030", "#C6A15B", "#932C20", "#3A1D18", "#FCF1DF"] },
+  { id: "lantern",    name: "Lantern",          text: "a cozy night mode",                 colors: ["#3A2B30", "#8A3D4F", "#E7B77A", "#F2B3BB", "#221819", "#40303A"] },
+  { id: "midnight",   name: "Midnight Kitsune", text: "a lantern-lit study room after dark", colors: ["#201D2B", "#393044", "#76516B", "#C58B86", "#E8C995", "#B7A77A"] }
 ];
 
 const Themes = (function () {
@@ -1512,12 +1508,6 @@ const Themes = (function () {
   const root = document.documentElement;
   const optButtons = {};
   let current = "teahouse";
-
-  function paintThumb(el, familyId) {
-    const [x, y, w, h] = FOX_SHEET.win[familyId];
-    el.style.backgroundSize = (FOX_SHEET.w / w * 100) + "% auto";
-    el.style.backgroundPosition = (x / (FOX_SHEET.w - w) * 100) + "% " + (y / (FOX_SHEET.h - h) * 100) + "%";
-  }
 
   function stopPetals() { petalsEl.replaceChildren(); }
   function startPetals() {
@@ -1564,9 +1554,9 @@ const Themes = (function () {
     b.className = "theme-opt";
     b.setAttribute("aria-pressed", "false");
     const thumb = document.createElement("span");
-    thumb.className = "theme-thumb";
+    thumb.className = "theme-swatches";
     thumb.setAttribute("aria-hidden", "true");
-    paintThumb(thumb, t.fox);
+    t.colors.forEach(c => { const chip = document.createElement("i"); chip.style.background = c; thumb.appendChild(chip); });
     const label = document.createElement("span");
     const name = document.createElement("span");
     name.className = "theme-name";
