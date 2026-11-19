@@ -1408,13 +1408,6 @@ html[data-theme="mossgarden"] {
   --bar-a: #3E5341; --bar-b: #344638; --footer: #1F2A22;
   --line-rgb: 52, 70, 56; --heart: #C8CEB0;
 }
-html[data-theme="bamboo"] {
-  --text: #1F2D24; --heading: #304538; --accent: #304538; --accent-hover-value: #3F5641;
-  --bg-a: #EAE8D6; --bg-b: #CDD2B2; --bg-c: #B9C49A;
-  --card-a: #F7F6EF; --card-b: #DEDFC7; --panel: #F3F2E8; --input: #FBFAF7; --paper: #F8F7F1;
-  --bar-a: #3C523F; --bar-b: #304538; --footer: #1D2922;
-  --line-rgb: 48, 69, 56; --heart: #B9C49A;
-}
 html[data-theme="snowfox"] {
   --text: #364048; --heading: #4F5E69; --accent: #4F5E69; --accent-hover-value: #667681;
   --bg-a: #F4F2EE; --bg-b: #E6E8E7; --bg-c: #DCE1E3;
@@ -1446,15 +1439,8 @@ html[data-theme="midnight"] {
 }
 
 /* 32. THEME CHIPS, LONGER MENU, PETAL MOOD BOARD ------------- */
-.theme-swatches { flex: none; display: grid; grid-template-columns: repeat(3, 14px); gap: 2px; }
-.theme-swatches i { display: block; width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0, 0, 0, 0.18); }
 .theme-list { max-height: min(60vh, 440px); overflow-y: auto; padding-right: var(--space-1); }
 
-.board-icon { display: flex; align-items: center; justify-content: center; background: none; }
-.board-flower { display: block; width: 32px; height: 32px; fill: currentColor; filter: drop-shadow(0 0 1px rgba(246, 235, 213, 0.9)); }
-.board-icon[data-family="tender"]   { color: #DFA1A5; }
-.board-icon[data-family="calm"]     { color: #657653; }
-.board-icon[data-family="bright"]   { color: #C6A15B; }
-.board-icon[data-family="thinking"] { color: #642D3B; }
-.board-icon[data-family="heavy"]    { color: #4A4646; }
-.board-icon[data-family="intense"]  { color: #C74736; }
+/* Theme menu: a sakura flower in each theme's colour */
+.theme-flower-wrap { flex: none; display: grid; place-items: center; width: 40px; height: 40px; }
+.theme-flower { display: block; width: 32px; height: 32px; fill: currentColor; filter: drop-shadow(0 0 1px rgba(var(--line-rgb), 0.9)); }
