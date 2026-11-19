@@ -8,9 +8,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:wght@500;700&family=Pixelify+Sans:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="logo.png">
+  <script>try{var t=JSON.parse(localStorage.getItem("kitsune:theme"));if(t){document.documentElement.setAttribute("data-theme",t)}}catch(e){}</script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="petals" id="petals" aria-hidden="true"></div>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <symbol id="px-heart" viewBox="0 0 9 8">
       <path d="M1 0h2v1H1zM6 0h2v1H6zM0 1h4v1H0zM5 1h4v1H5zM0 2h9v2H0zM1 4h7v1H1zM2 5h5v1H2zM3 6h3v1H3zM4 7h1v1H4z"/>
@@ -37,6 +39,9 @@
         <button class="nav-link nav-note" id="note-open" type="button" aria-haspopup="dialog">
           <svg class="px-heart heart-readme" aria-hidden="true"><use href="#px-heart"/></svg>Read me
         </button>
+        <button class="nav-link nav-note nav-theme" id="theme-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="theme-panel">
+          <svg class="px-heart heart-theme" aria-hidden="true"><use href="#px-heart"/></svg>Themes
+        </button>
       </nav>
       <!-- SHRINE OF SOURCES: searchable list of genuine research sites -->
       <div class="shrine" id="shrine">
@@ -53,6 +58,14 @@
           <p class="shrine-count" id="shrine-count" role="status"></p>
           <div class="shrine-list" id="shrine-list"></div>
         </div>
+      </div>
+    <div class="theme-panel" id="theme-panel" hidden>
+        <div class="theme-head">
+          <p class="theme-title">Kitsu's Themes</p>
+          <button class="win-btn win-close" id="theme-close" type="button" aria-label="Close themes">X</button>
+        </div>
+        <ul class="theme-list" id="theme-list"></ul>
+        <label class="theme-petals" id="theme-petals-row" hidden><input type="checkbox" id="theme-petals"> Falling petals</label>
       </div>
     </header>
 
@@ -111,6 +124,7 @@
       <!-- POMODORO ROOM (timer window + Little Accomplishment Bar) -->
       <section class="window timer-window" id="timer" aria-label="Pomodoro Room">
         <div class="window-bar">
+          <img class="window-icon-img" src="timer-icon.png" alt="" width="28" height="28" onerror="this.style.display='none'">
           <h2 class="window-title-wrap">Pomodoro Room</h2>
           <div class="window-controls">
             <button class="win-btn win-min" id="tw-min" type="button" aria-label="Minimise Pomodoro Room">_</button>
@@ -144,7 +158,7 @@
           <div class="progress timer-progress" aria-label="Today's study sessions">
             <div class="progress-row">
               <span class="bar-icon" id="bar-icon"><svg class="px-heart" aria-hidden="true"><use href="#px-heart"/></svg></span>
-              <div class="progress-bar" id="progress-bar" role="img" aria-label="No sessions yet today"></div>
+              <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Study time today"><div class="progress-fill" id="progress-fill"></div></div>
             </div>
             <p class="progress-count" id="progress-count">No sessions yet. No rush.</p>
           </div>
@@ -285,7 +299,7 @@
         <p class="modal-line">A little note about your things:</p>
         <ul class="modal-list">
           <li>Your diary, notes and bookshelf are saved in this browser, on this device.</li>
-          <li>They won't follow you to other devices or browsers.Kitsu thought you should know sweetie</li>
+          <li>They won't follow you to other devices or browsers. Kitsu thought you should know this sweetie</li>
           <li>Clearing your browser data will clear them too.</li>
         </ul>
         <p class="modal-line">Tip: keep using the same browser and your nook will always be here.</p>
