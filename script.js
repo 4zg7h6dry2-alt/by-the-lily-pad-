@@ -868,7 +868,10 @@ const Mood = (function () {
       cells.push(li);
     }
     grid.replaceChildren(...cells);
-    grid.scrollLeft = grid.scrollWidth;   // show today at the end of the row
+    const toEnd = () => { grid.scrollLeft = grid.scrollWidth; };   // show today at the end of the row
+    toEnd();
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(toEnd);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(toEnd);
   }
 
   function step(dir) {
@@ -1337,6 +1340,7 @@ const INFO = {
   credits: { title: "Credits & Acknowledgements", blocks: [
     { t: "p", text: "Most of the artwork and visual resources in The Kitsuné Nook were created with the assistance of AI." },
     { t: "p", text: "I take no credit for the original AI-generated assets or third-party resources. My contribution lies in the concept, colour palettes, creative direction and coding that brought this little nook to life." },
+    { t: "p", text: "The ambient sound loops in Kitsu's Ambience are from SpritePilot (CC0, public domain).", link: { text: "spritepilot.com", url: "https://spritepilot.com/free-game-assets/sound-effects/ambient" } },
     { t: "quote", text: "A little vision, a little AI, and a lot of tinkering!" },
     { t: "small", text: "Still tinkering tho! Haha ;)" }
   ]},
@@ -1348,8 +1352,8 @@ const INFO = {
   ]},
   about: { title: "About Me", blocks: [
     { t: "h", text: "The Person Behind the Nook" },
-    { t: "p", text: "Hello, I'm Nee!" },
-    { t: "p", text: "I'm a student, graphic designer and curious soul with a fondness for art, storytelling, folklore and all things a little whimsical." },
+    { t: "p", text: "Hi sweetie, I'm Nee!" },
+    { t: "p", text: "I'm a graphic designer and curious soul with a fondness for art, storytelling, folklore and all things a little whimsical." },
     { t: "p", text: "I enjoy bringing ideas to life, experimenting with colours and creating little things that make everyday life more interesting." },
     { t: "p", text: "The Kitsuné Nook is one of those creations: a personal project where my love for design, learning and a little Japanese-inspired magic could meet." },
     { t: "p", text: "I'm still learning, still creating and occasionally fighting with my code. But that's part of the fun." }
@@ -1419,6 +1423,14 @@ const Info = (function () {
     const el = document.createElement(block.t === "h" ? "h3" : "p");
     el.className = { h: "info-h", quote: "info-quote", small: "info-small" }[block.t] || "";
     el.textContent = block.text;
+    if (block.link) {
+      const a = document.createElement("a");
+      a.href = block.link.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = block.link.text;
+      el.append(" ", a);
+    }
     return el;
   }
 
@@ -1591,4 +1603,101 @@ const Themes = (function () {
 
   apply(Storage.get("theme", "teahouse"), false);
   return { apply };
+})();
+
+// ---- Kitsu's Ambience: looping background sounds ----
+// Sounds from SpritePilot (CC0). Save these MP3s next to index.html; matching .ogg files are optional and play smoother where supported.
+const AMBIENCE = [
+  { id: "rain",        name: "Rain",        file: "rain.mp3" },
+  { id: "rainroof",    name: "Rain on roof", file: "rain-roof.mp3" },
+  { id: "campfire",    name: "Campfire",    file: "campfire.mp3" },
+  { id: "forest",      name: "Forest",      file: "forest.mp3" },
+  { id: "night",       name: "Night",       file: "night.mp3" },
+  { id: "river",       name: "River",       file: "river.mp3" },
+  { id: "ocean",       name: "Ocean",       file: "ocean.mp3" },
+  { id: "wind",        name: "Wind",        file: "wind.mp3" },
+  { id: "cave",        name: "Cave",        file: "cave.mp3" },
+  { id: "citynight",   name: "City night",  file: "city-night.mp3" },
+  { id: "desertwind",  name: "Desert wind", file: "desert-wind.mp3" },
+  { id: "dungeon",     name: "Dungeon",     file: "dungeon.mp3" }
+];
+
+const Ambience = (function () {
+  const $ = id => document.getElementById(id);
+  const chipsEl = $("amb-chips"), statusEl = $("amb-status"), volEl = $("amb-volume"), volRow = $("amb-vol-row");
+  let SUPPORTS_OGG = false;
+  try { SUPPORTS_OGG = new Audio().canPlayType('audio/ogg; codecs="vorbis"') !== ""; } catch { SUPPORTS_OGG = false; }
+  const players = {};          // id -> Audio (created the first time you tap a sound)
+  const buttons = {};
+  const active = new Set();
+  let volume = Math.min(1, Math.max(0, Number(Storage.get("ambVolume", 0.6))));
+
+  // iPhones ignore the volume setting of web audio, so hide the slider there
+  let volumeWorks = true;
+  try { const t = new Audio(); t.volume = 0.5; volumeWorks = t.volume === 0.5; } catch { volumeWorks = false; }
+  volRow.hidden = !volumeWorks;
+  volEl.value = Math.round(volume * 100);
+
+  function showStatus() {
+    if (!active.size) { statusEl.textContent = volumeWorks ? "" : "Use your phone's volume buttons to adjust the sound."; return; }
+    statusEl.textContent = "Playing: " + AMBIENCE.filter(s => active.has(s.id)).map(s => s.name).join(", ");
+  }
+
+  function stopOne(s) {
+    if (players[s.id]) players[s.id].pause();
+    active.delete(s.id);
+    buttons[s.id].setAttribute("aria-pressed", "false");
+  }
+
+  function toggle(s) {
+    if (active.has(s.id)) { stopOne(s); showStatus(); return; }
+    let a = players[s.id];
+    if (!a) {
+      const base = s.file.replace(/\.mp3$/, "");
+      const sources = SUPPORTS_OGG ? [base + ".ogg", s.file] : [s.file];
+      let tryIndex = 0;
+      a = new Audio(sources[0]);
+      a.loop = true;
+      a.preload = "auto";
+      a.addEventListener("error", () => {
+        if (tryIndex < sources.length - 1) {          // no .ogg uploaded: use the MP3
+          tryIndex++;
+          a.src = sources[tryIndex];
+          a.load();
+          if (active.has(s.id)) { const p2 = a.play(); if (p2 && p2.catch) p2.catch(() => {}); }
+          return;
+        }
+        stopOne(s);
+        statusEl.textContent = "Couldn't load " + s.name + ". Is " + s.file + " uploaded?";
+      });
+      players[s.id] = a;
+    }
+    if (volumeWorks) a.volume = volume;
+    active.add(s.id);
+    buttons[s.id].setAttribute("aria-pressed", "true");
+    showStatus();
+    const p = a.play();                          // must happen inside the tap, so phones allow it
+    if (p && p.catch) p.catch(() => { stopOne(s); statusEl.textContent = "Your browser blocked the sound. Tap again to play."; });
+  }
+
+  AMBIENCE.forEach(s => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "amb-chip";
+    b.setAttribute("aria-pressed", "false");
+    b.textContent = s.name;
+    b.addEventListener("click", () => toggle(s));
+    buttons[s.id] = b;
+    chipsEl.appendChild(b);
+  });
+
+  volEl.addEventListener("input", () => {
+    volume = Number(volEl.value) / 100;
+    Storage.set("ambVolume", volume);
+    Object.values(players).forEach(a => { if (volumeWorks) a.volume = volume; });
+  });
+  $("amb-stop").addEventListener("click", () => { AMBIENCE.forEach(stopOne); showStatus(); });
+
+  showStatus();
+  return { toggle };
 })();
